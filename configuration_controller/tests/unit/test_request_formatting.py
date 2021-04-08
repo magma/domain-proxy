@@ -50,5 +50,5 @@ class RequestMergingTestCase(TestCase):
 
     @staticmethod
     def _get_json_from_fixture(fixture_name):
-        with open(f'../fixtures/fake_request_queues/{fixture_name}') as f:
+        with open(f'fixtures/fake_request_queues/{fixture_name}') as f:
             return json.dumps(json.load(f))

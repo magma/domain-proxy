@@ -28,7 +28,7 @@ def merge_requests(requests_json: str) -> str:
 
     for request in requests:
         for request_name, object_list in request.items():
-            if merged_requests and request_name not in merged_requests:
+            if merged_requests and merged_requests.get(request_name) is None:
                 raise PayloadFormatException("Multiple request types detected")
             merged_requests[request_name].extend(object_list)
     return json.dumps(merged_requests)
