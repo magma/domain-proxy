@@ -1,4 +1,5 @@
 import json
+import os
 from unittest import TestCase
 
 from parameterized import parameterized
@@ -50,5 +51,5 @@ class RequestMergingTestCase(TestCase):
 
     @staticmethod
     def _get_json_from_fixture(fixture_name):
-        with open(f'fixtures/fake_request_queues/{fixture_name}') as f:
+        with open(os.path.join(os.path.dirname(__file__), "fixtures/fake_request_queues", fixture_name)) as f:
             return json.dumps(json.load(f))
