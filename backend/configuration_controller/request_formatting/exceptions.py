@@ -1,0 +1,2 @@
+class PayloadFormatException(Exception):
+    pass
