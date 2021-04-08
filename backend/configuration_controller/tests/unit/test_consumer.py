@@ -2,7 +2,7 @@ import unittest
 import mock
 
 
-from consumer.consumer import RequestsConsumer
+from configuration_controller.consumer.consumer import RequestsConsumer
 
 
 class TestConsumerNoHostException(unittest.TestCase):
