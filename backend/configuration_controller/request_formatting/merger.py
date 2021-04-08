@@ -6,6 +6,19 @@ from configuration_controller.request_formatting.exceptions import PayloadFormat
 
 
 def merge_requests(requests_json: str) -> str:
+    """
+    This function receives an array of JSON objects and merges them into one json object with a subarray of objects as
+    long as the keys of the objects are the same.
+    If the keys differ, it will raise a PayloadFormatException
+
+    example:
+
+    '[{"foo": [{...}]}, {"foo": [{...}]}]' will be serialized to '[{"foo": [{...}, {...}]}]'
+    but '[{"foo": [{...}]}, {"baz": [{...}]}]' will raise an exception.
+
+    :param requests_json: JSON serialized array of requests in the following format '[{"foo": [{...}]}, ...]'
+    :return: JSON serialized object with a subarray of payloads
+    """
     try:
         requests = json.loads(requests_json)
     except JSONDecodeError:
