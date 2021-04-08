@@ -1,0 +1,13 @@
+apiVersion: skaffold/v2beta13
+kind: Config
+metadata:
+  name: configuration-controller
+build:
+  artifacts:
+    - image: configuration-controller
+      context: configuration_controller
+deploy:
+  kubectl:
+    manifests:
+      - ./tools/deployment/*.yaml
+
