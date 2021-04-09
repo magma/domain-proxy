@@ -14,4 +14,4 @@ class TestConsumerProcessDataEvents(unittest.TestCase):
     @mock.patch('pika.BlockingConnection')
     def test_process_data_events(self, mock_BlockingConnection):
         consumer = RequestsConsumer('1.1.1.1')
-        self.assertIsNone(consumer.process_data_events())
+        self.assertIsInstance(consumer.process_data_events(), dict)

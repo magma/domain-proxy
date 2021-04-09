@@ -40,15 +40,31 @@ class RequestsConsumer:
                                queue=result.method.queue,
                                routing_key=f'"{requestName}"')
             channel.basic_consume(queue=result.method.queue,
-                                  on_message_callback=self._queue_callback,
+                                  on_message_callback=lambda ch,
+                                  method, properties, body:
+                                  self._queue_callback(ch,
+                                                       method,
+                                                       properties,
+                                                       body),
                                   auto_ack=True)
         self._channel = channel
 
-    @staticmethod
-    def _queue_callback(ch, method, properties, body):
-        print('body')
+    def _queue_callback(self, ch, method, properties, body):
+        """Callback method for pika channel basic_consume on_message_callback
+        This method appends body to proper request string based on routing key
 
-    def process_data_events(self, time_limit=1):
+        :param ch: Pika channel
+        :type ch: pika.channel.Channel
+        :param method: Basic delivery parameters
+        :type method: pika.spec.Basic.Deliver
+        :param properties: Properties of message
+        :type properties: pika.spec.BasicProperties
+        :param body: Body of the received message
+        :type body: bytes
+        """
+        self._received_requests[method.routing_key].append(body)
+
+    def process_data_events(self, time_limit=1) -> dict:
         """This method process data events
         in RabbitMQ queues for specified time limit.
 
@@ -57,5 +73,11 @@ class RequestsConsumer:
         :param time_limit: Time limit of collecting requests
         from RabbitMQ in seconds
         :type time_limit: int
+
+        :return: Dict with keys of request types and values with strings
+        of all requests collected by specific routing key
+        :rtype: dict
         """
+        self._received_requests = dict.fromkeys(self._requests, '')
         self._channel.connection.process_data_events(time_limit=time_limit)
+        return self._received_requests
