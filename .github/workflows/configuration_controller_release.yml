@@ -1,0 +1,26 @@
+name: Create image tagged with release tag
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  release_tag:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: configuration_controller
+    strategy:
+      matrix:
+        domain-proxy-apps: ["configuration_controller"]
+    steps:
+    - name: Login to DockerHub Registry
+      run: |
+        echo ${{ secrets.DOCKERHUB_PASSWORD }} | \
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+    - name: Use release tag to tag docker image
+      run: |
+        docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.domain-proxy-apps }}:$GITHUB_SHA
+        docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.domain-proxy-apps }}:$GITHUB_SHA \
+        ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.domain-proxy-apps }}:$GITHUB_REF
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.domain-proxy-apps }}:$GITHUB_REF
