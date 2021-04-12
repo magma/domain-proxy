@@ -38,17 +38,16 @@ class TestConsumerProcessDataEvents(unittest.TestCase):
                 self._mock_on_message_call(consumer))
         received_requests = consumer.process_data_events()
         for request_key, requests_body in received_requests.items():
-            json_body = json.loads(requests_body)
             collected_object_numbers = []
-            for request_object in json_body:
+            for request_object in requests_body:
                 collected_object_numbers.append(
-                    request_object['object_number'])
+                    json.loads(request_object)['object_number'])
             if request_key == 'RegistrationRequest':
-                self.assertTrue(len(json_body) == 2)
+                self.assertEqual(len(requests_body), 2)
                 self.assertListEqual(collected_object_numbers, [1, 3])
             elif request_key == 'DeregistrationRequest':
-                self.assertTrue(len(json_body) == 1)
+                self.assertEqual(len(requests_body), 1)
                 self.assertListEqual(collected_object_numbers, [2])
             else:
-                self.assertTrue(len(json_body) == 0)
+                self.assertEqual(len(requests_body), 0)
                 self.assertListEqual(collected_object_numbers, [])

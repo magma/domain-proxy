@@ -63,7 +63,7 @@ class RequestsConsumer:
         """
         if isinstance(body, bytes):
             body = body.decode('utf-8')
-        self._received_requests[routing_key] += body + ','
+        self._received_requests[routing_key].append(body)
 
     def process_data_events(self, time_limit=1) -> dict:
         """This method process data events
@@ -79,12 +79,6 @@ class RequestsConsumer:
         of all requests collected by specific routing key
         :rtype: dict
         """
-        self._received_requests = dict.fromkeys(self._requests, '[')
+        self._received_requests = {request: [] for request in self._requests}
         self._channel.connection.process_data_events(time_limit=time_limit)
-        for request in self._requests:
-            if len(self._received_requests[request]) > 1:
-                self._received_requests[request] = \
-                    self._received_requests[request][:-1] + ']'
-            else:
-                self._received_requests[request] += ']'
         return self._received_requests
