@@ -9,5 +9,6 @@ build:
 deploy:
   kubectl:
     manifests:
+      - https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml
       - ./tools/deployment/*.yaml
 
