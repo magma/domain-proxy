@@ -1,5 +1,5 @@
-[
-  {
+queued_requests = [
+  """{
     "registrationRequest": [
       {
         "fccId": "321cba",
@@ -32,8 +32,8 @@
         ]
       }
     ]
-  },
-  {
+  }""",
+  """{
     "spectrumEnquiryRequest": [
       {
         "fccId": "abc123",
@@ -66,5 +66,5 @@
         ]
       }
     ]
-  }
+  }"""
 ]

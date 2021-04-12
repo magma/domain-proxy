@@ -1,5 +1,5 @@
-[
-  {
+queued_requests = [
+  """{
     "registrationRequest": [
       {
         "fccId": "321cba",
@@ -32,8 +32,8 @@
         ]
       }
     ]
-  },
-  {
+  }""",
+  """{
     "registrationRequest": [
       {
         "fccId": "abc123",
@@ -96,5 +96,5 @@
         ]
       }
     ]
-  }
+  }"""
 ]
