@@ -73,7 +73,7 @@ jobs:
 #        docker push ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:$GITHUB_SHA
     - name: Build configuration_controller
       run: |
-        echo ${{ github.actor }}
+        curl -i -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} https://api.github.com/users/octocat
         docker pull ghcr.io/${{ github.actor }}/configuration_controller:latest || true
         docker build \
         --pull \
