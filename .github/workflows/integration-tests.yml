@@ -1,0 +1,35 @@
+name: Integration tests
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+jobs:
+  run-integration-tests:
+    runs-on: ubuntu-latest
+    name: Run integration tests.
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login to DockerHub Registry
+      run: |
+        echo ${{ secrets.DOCKERHUB_PASSWORD }} | \
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+    - name: Start minikube
+      uses: medyagh/setup-minikube@master
+    - name: Enable ingress on minikube
+      run: minikube addons enable ingress
+    - name: Create certificate secrets
+      run: kubectl apply -f tools/deployment/certificate-certs.yml
+    - name: Create keys secrets
+      run: kubectl apply -f tools/deployment/certificate-keys.yml
+    - name: Run fake sas server
+      run: kubectl apply -f tools/deployment/fake_sas.yml
+    - name: Wait for fakesas pod to be ready
+      run: |
+        while [[ $(kubectl get pods -l \
+        app=fake-sas -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; \
+        do echo "waiting for pod" && sleep 1; done
+    - name: Get fakesas logs
+      run: kubectl logs $(kubectl get pod -l app=fake-sas -o=name)
+    - name: Get minikube IP.
+      run: minikube ip
