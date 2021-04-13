@@ -55,7 +55,7 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
-        username: ${{ github.repository_owner }}
+        username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
 #    - name: Login to DockerHub Registry
@@ -73,10 +73,10 @@ jobs:
 #        docker push ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:$GITHUB_SHA
     - name: Build configuration_controller
       run: |
-        echo ${{ github.repository_owner }}
-        docker pull ghcr.io/${{ github.repository_owner }}/configuration_controller:latest || true
+        echo ${{ github.actor }}
+        docker pull ghcr.io/${{ github.actor }}/configuration_controller:latest || true
         docker build \
         --pull \
-        --cache-from ghcr.io/${{ github.repository_owner }}/configuration_controller:latest \
-        --tag ghcr.io/${{ github.repository_owner }}/configuration_controller:$GITHUB_SHA .
-        docker push ghcr.io/${{ github.repository_owner }}/configuration_controller:$GITHUB_SHA
+        --cache-from ghcr.io/${{ github.actor }}/configuration_controller:latest \
+        --tag ghcr.io/${{ github.actor }}/configuration_controller:$GITHUB_SHA .
+        docker push ghcr.io/${{ github.actor }}/configuration_controller:$GITHUB_SHA
