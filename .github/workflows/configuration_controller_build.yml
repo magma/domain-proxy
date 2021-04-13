@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - "configuration_controller/**"
-      - ".github/workflows/configuration_controller*.yaml"
+      - ".github/workflows/configuration_controller*.yml"
 
 jobs:
   unit_tests:
