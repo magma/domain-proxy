@@ -28,3 +28,5 @@ spec:
               name: certificate-certs
           - secret:
               name: certificate-keys
+          - secret:
+              name: rabbitmq-secret

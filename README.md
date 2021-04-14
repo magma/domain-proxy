@@ -8,6 +8,13 @@ Detailed instruction on how to install utilities can be found here:
   - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
   - [skaffold](https://skaffold.dev/docs/install/)
 
+1. Run make. Default target starts minikube, prepares rabbitmq and fake_sas, and start skaffold in development mode.
+```
+make
+```
+## Maunal local deployment
+You can also choose to run all steps manually.
+
 1. Start minikube
 ```
 minikube start
@@ -26,3 +33,4 @@ skaffold dev
 
 Here's short demo of running domain proxy using skaffold on minikube.
 ![Example](./docs/examples/run_skaffold.svg)
+

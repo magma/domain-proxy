@@ -29,3 +29,19 @@ spec:
               name: certificate-certs
           - secret:
               name: certificate-keys
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fake-sas-service
+spec:
+  type: NodePort
+  ports:
+    - name: https
+      port: 443
+      targetPort: 9000
+      nodePort: 30443
+  selector:
+    app: fake-sas
