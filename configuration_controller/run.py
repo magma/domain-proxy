@@ -8,6 +8,13 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from configuration_controller.config import Config
+from configuration_controller.consumer.consumer import RequestsConsumer
+from configuration_controller.request_formatting.merger import merge_requests
+from configuration_controller.request_router.request_router import RequestRouter
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @click.group()
@@ -16,14 +23,21 @@ def cli():
 
 
 @cli.command()
-@click.option("--msg", "-m")
-def run(msg):
+def run():
     config = get_config()
-    logging.basicConfig(level=config.LOG_LEVEL)
     scheduler = BackgroundScheduler()
+    consumer = RequestsConsumer(rabbitmq_url=config.RABBITMQ_HOST)
+    router = RequestRouter(
+        sas_url=config.SAS_URL,
+        rc_ingest_url=config.RC_INGEST_URL,
+        cert_path=config.CC_CERT_PATH,
+        ssl_key_path=config.CC_SSL_KEY_PATH,
+        request_mapping_file_path=config.REQUEST_MAPPING_FILE_PATH,
+        ssl_verify=False,  # TODO put an actual path to SAS cert here
+    )
     scheduler.add_job(
-        hello_job,
-        args=[msg],
+        process_requests,
+        args=[consumer, router],
         trigger=IntervalTrigger(seconds=config.REQUEST_PROCESSING_INTERVAL),
         max_instances=1,
     )
@@ -40,9 +54,19 @@ def get_config() -> Config:
     return config_class()
 
 
-def hello_job(msg):
-    logging.debug(msg)
-    print(msg)
+def process_requests(consumer, router):
+    logger.info('Processing requests')
+    sas_responses = []
+    sas_requests = consumer.process_data_events()
+    for req in consumer.request_list:
+        requests_list = sas_requests.get(req)
+        if not requests_list:
+            continue
+        bulked_sas_requests = merge_requests(sas_requests[req])
+        sas_response = router.post_to_sas(bulked_sas_requests)
+        sas_responses.append(sas_response)
+        logger.info(f'{sas_response.json()=}')
+    return sas_responses
 
 
 if __name__ == '__main__':

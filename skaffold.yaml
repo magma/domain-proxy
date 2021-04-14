@@ -28,7 +28,6 @@ profiles:
   deploy:
     kubectl:
       manifests:
-        - ./tools/deployment/configuration_controller_*.yaml
         - ./tools/deployment/tests/configuration_controller_*.yaml
   activation:
   - env: CI=true

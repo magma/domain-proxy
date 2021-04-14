@@ -1,22 +1,15 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: configuration-controller-tests-deployment
+  name: configuration-controller-tests-job
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: configuration-controller-tests
   template:
-    metadata:
-      labels:
-        app: configuration-controller-tests
-        type: app
     spec:
+      restartPolicy: Never
       containers:
       - name: configuration-controller-tests
         image: configuration-controller-tests
-        args: ["-m", "pytest", "tests/integration"]
+        args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/configuration_controller/test-results/test_report.xml"]
         volumeMounts:
         - name: test-results
           mountPath: /backend/configuration_controller/test-results
@@ -37,3 +30,4 @@ spec:
         hostPath:
           path: /tmp/test-results
           type: DirectoryOrCreate
+  backoffLimit: 10

@@ -2,8 +2,10 @@ import json
 from collections import defaultdict
 from typing import List
 
+from configuration_controller.custom_types.custom_types import MergedRequests
 
-def merge_requests(requests_list: List[str]) -> str:
+
+def merge_requests(requests_list: List[str]) -> MergedRequests:
     """
     This function receives an array of JSON objects and merges them into one JSON object with request names as keys and
     sub-arrays of objects as values
@@ -23,4 +25,4 @@ def merge_requests(requests_list: List[str]) -> str:
         for request_name, payload in request.items():
             merged_requests[request_name].extend(payload)
 
-    return json.dumps(merged_requests)
+    return merged_requests

@@ -1,0 +1,30 @@
+name: Unit Test Results
+
+on:
+  workflow_run:
+    workflows:
+      - "Test and build configuration controller"
+    types:
+      - completed
+
+jobs:
+  integration-test-results:
+    name: Integration test results
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion != 'skipped' && (
+      github.event.sender.login == 'dependabot[bot]' ||
+      github.event.workflow_run.head_repository.full_name != github.repository )
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: configuration_controller.yml
+          path: test-results
+
+      - name: Publish integration test results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: test-results/**/*.xml
+

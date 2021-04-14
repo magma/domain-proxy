@@ -19,7 +19,8 @@ class RequestRouterTestCase(TestCase):
             rc_ingest_url=self.rc_ingest_url,
             cert_path='fake/cert/path',
             ssl_key_path='fake/key/path',
-            request_mapping_file_path=self._get_from_fixture("fake_mappings/request_mapping.yml")
+            request_mapping_file_path=self._get_from_fixture("fake_mappings/request_mapping.yml"),
+            ssl_verify=False
         )
 
     def test_router_forwarding_existing_sas_methods(self, mocker):
@@ -27,7 +28,7 @@ class RequestRouterTestCase(TestCase):
         self._register_test_post_endpoints(mocker, f'{self.sas_url}/test_post')
 
         # When
-        resp = self.router.post_to_sas(request_json='{"testPostRequest": [{"foo": "bar"}]}')
+        resp = self.router.post_to_sas(request_dict={"testPostRequest": [{"foo": "bar"}]})
 
         # Then
         self.assertEqual(200, resp.status_code)
@@ -38,7 +39,7 @@ class RequestRouterTestCase(TestCase):
         self._register_test_post_endpoints(mocker, self.rc_ingest_url)
 
         # When
-        sas_resp = self.router.post_to_sas(request_json='{"testPostRequest": [{"foo": "bar"}]}')
+        sas_resp = self.router.post_to_sas(request_dict={"testPostRequest": [{"foo": "bar"}]})
         rc_resp = self.router.redirect_sas_response_to_radio_controller(sas_resp)
 
         # Then
@@ -50,7 +51,7 @@ class RequestRouterTestCase(TestCase):
 
         # When / Then
         with self.assertRaises(RequestRouterException):
-            self.router.post_to_sas(request_json='{"nonExistingSasMethod": [{}]}')
+            self.router.post_to_sas(request_dict={"nonExistingSasMethod": [{}]})
 
     def _register_test_post_endpoints(self, mocker, url):
         mocker.register_uri('POST', url, json=self._response_callback)

@@ -15,11 +15,11 @@ class TestConsumerProcessDataEvents(unittest.TestCase):
     @staticmethod
     def _mock_on_message_call(consumer):
         requests = [
-            {'routing_key': 'RegistrationRequest',
+            {'routing_key': 'registrationRequest',
              'body': '{"object_number": 1}'},
-            {'routing_key': 'DeregistrationRequest',
+            {'routing_key': 'deregistrationRequest',
              'body': '{"object_number": 2}'},
-            {'routing_key': 'RegistrationRequest',
+            {'routing_key': 'registrationRequest',
              'body': '{"object_number": 3}'},
         ]
         for request in requests:
@@ -42,10 +42,10 @@ class TestConsumerProcessDataEvents(unittest.TestCase):
             for request_object in requests_body:
                 collected_object_numbers.append(
                     json.loads(request_object)['object_number'])
-            if request_key == 'RegistrationRequest':
+            if request_key == 'registrationRequest':
                 self.assertEqual(len(requests_body), 2)
                 self.assertListEqual(collected_object_numbers, [1, 3])
-            elif request_key == 'DeregistrationRequest':
+            elif request_key == 'deregistrationRequest':
                 self.assertEqual(len(requests_body), 1)
                 self.assertListEqual(collected_object_numbers, [2])
             else:

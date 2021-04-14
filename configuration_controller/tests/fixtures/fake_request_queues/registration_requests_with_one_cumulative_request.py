@@ -1,4 +1,4 @@
-queued_requests = [
+registration_requests_with_cumulative = [
   """{
     "registrationRequest": [
       {
@@ -37,6 +37,36 @@ queued_requests = [
     "registrationRequest": [
       {
         "fccId": "abc123",
+        "cbsdCategory": "A",
+        "callSign": "CB987",
+        "userId": "John Doe",
+        "airInterface": {
+          "radioTechnology": "E_UTRA"
+        },
+        "cbsdSerialNumber": "abcd1234",
+        "measCapability": [
+          "RECEIVED_POWER_WITHOUT_GRANT"
+        ],
+        "installationParam": {
+          "latitude": 37.419735,
+          "longitude": -122.072205,
+          "height": 6,
+          "heightType": "AGL",
+          "indoorDeployment": true
+        },
+        "groupingParam": [
+          {
+            "groupId": "example-group-1",
+            "groupType": "INTERFERENCE_COORDINATION"
+          },
+          {
+            "groupId": "example-group-2",
+            "groupType": "INTERFERENCE_COORDINATION"
+          }
+        ]
+      },
+      {
+        "fccId": "abc1234",
         "cbsdCategory": "A",
         "callSign": "CB987",
         "userId": "John Doe",

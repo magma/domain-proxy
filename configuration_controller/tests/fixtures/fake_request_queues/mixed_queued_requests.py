@@ -34,7 +34,7 @@ queued_requests = [
     ]
   }""",
   """{
-    "spectrumEnquiryRequest": [
+    "spectrumInquiryRequest": [
       {
         "fccId": "abc123",
         "cbsdCategory": "A",
