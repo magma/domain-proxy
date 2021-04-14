@@ -45,3 +45,4 @@ _ci_init:
 .PHONY: _ci_test
 _ci_test:
 	skaffold run
+	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job
