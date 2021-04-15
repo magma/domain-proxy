@@ -4,10 +4,10 @@ on:
   pull_request:
     paths:
       - "configuration_controller/**"
-      - ".github/workflows/configuration_controller*.yaml"
+      - ".github/workflows/configuration_controller*.yml"
 
 jobs:
-  unit_tests:
+  configuration_controller_unit_tests:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,27 +38,14 @@ jobs:
       run: |
         pytest
 
-  build:
+  configuration_controller_build:
     needs: unit_tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: configuration_controller
-    strategy:
-      matrix:
-        python-version: [3.8]
-  
+    env:
+      SERVICE: "configuration-controller"
+
     steps:
     - uses: actions/checkout@v2
-    - name: Login to DockerHub Registry
+    - name: Build image
       run: |
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | \
-        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-    - name: Build configuration_controller
-      run: |
-        docker pull ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:latest || true
-        docker build \
-        --pull \
-        --cache-from ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:latest \
-        --tag ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:$GITHUB_SHA .
-        docker push ${{ secrets.DOCKERHUB_USERNAME}}/configuration_controller:$GITHUB_SHA
+        make _build_ci
