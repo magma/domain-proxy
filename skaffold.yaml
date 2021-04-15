@@ -10,3 +10,11 @@ deploy:
   kubectl:
     manifests:
       - ./tools/deployment/configuration_controller_*.yaml
+
+profiles:
+- name: ci
+  build:
+    local:
+      push: false
+  activation:
+  - env: CI=true
