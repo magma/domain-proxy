@@ -3,8 +3,8 @@ name: Test and build configuration controller
 on: 
   pull_request:
     paths:
-      - "configuration_controller/**"
-      - ".github/workflows/configuration_controller*.yml"
+      - configuration_controller/**
+      - '.github/workflows/configuration_controller.yml'
 
 jobs:
   configuration_controller_unit_tests:
