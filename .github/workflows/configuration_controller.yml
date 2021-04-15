@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "configuration_controller/**"
-      - ".github/workflows/configuration_controller*.yml"
+      - ".github/workflows/configuration_controller.yml"
 
 jobs:
   configuration_controller_unit_tests:
@@ -39,7 +39,7 @@ jobs:
         pytest
 
   configuration_controller_build:
-    needs: unit_tests
+    needs: configuration_controller_unit_tests
     runs-on: ubuntu-latest
     env:
       SERVICE: "configuration-controller"
