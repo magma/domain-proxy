@@ -12,10 +12,13 @@ spec:
       default_user = guest 
       default_pass = guest
   replicas: 1
-  #override:
-  #  service:
-      #spec:
-  #    type: NodePort
   tls:
     secretName: rabbitmq-secret
     caSecretName: rabbitmq-secret
+  resources:
+    requests:
+      cpu: 700m
+      memory: 1Gi
+    limits:
+      cpu: 1
+      memory: 2Gi
