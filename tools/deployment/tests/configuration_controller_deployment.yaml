@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configuration-controller-tests-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configuration-controller-tests
+  template:
+    metadata:
+      labels:
+        app: configuration-controller-tests
+        type: app
+    spec:
+      containers:
+      - name: configuration-controller-tests
+        image: configuration-controller-tests
+        args: ["-m", "pytest", "tests/integration"]
+        volumeMounts:
+        - name: test-results
+          mountPath: /backend/configuration_controller/test-results
+        - name: certificates
+          mountPath: /backend/configuration_controller/certs
+          readOnly: true
+      volumes:
+      - name: certificates
+        projected:
+          sources:
+          - secret:
+              name: certificate-certs
+          - secret:
+              name: certificate-keys
+          - secret:
+              name: rabbitmq-secret
+      - name: test-results
+        hostPath:
+          path: /tmp/test-results
+          type: DirectoryOrCreate

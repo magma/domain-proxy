@@ -1,7 +1,7 @@
 apiVersion: skaffold/v2beta13
 kind: Config
 metadata:
-  name: configuration-controller
+  name: domain-proxy
 build:
   artifacts:
     - image: configuration-controller
@@ -16,5 +16,19 @@ profiles:
   build:
     local:
       push: false
+      concurrency: 0
+    artifacts:
+    - image: configuration-controller
+      context: configuration_controller
+    - image: configuration-controller-tests
+      context: configuration_controller
+      docker:
+        buildArgs:
+          ENV: 'tests'
+  deploy:
+    kubectl:
+      manifests:
+        - ./tools/deployment/configuration_controller_*.yaml
+        - ./tools/deployment/tests/configuration_controller_*.yaml
   activation:
   - env: CI=true

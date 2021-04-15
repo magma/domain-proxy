@@ -21,6 +21,14 @@ spec:
         - name: certificates
           mountPath: /opt/server/certs
           readOnly: true
+        readinessProbe:
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 2
+        livenessProbe:
+          tcpSocket:
+            port: 9000
+          periodSeconds: 5
       volumes:
       - name: certificates
         projected:
