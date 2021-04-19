@@ -1,0 +1,61 @@
+@startuml
+
+activate CBSD
+
+CBSD -> PC: RegistrationRequest
+
+activate PC
+
+alt registration failed
+    
+    CBSD <-- PC: RegistrationResponse( Failed )
+
+else registration success
+    
+    CBSD <-- PC: RegistrationResponse( Success )
+
+    CBSD -> PC: GrantRequest
+
+    alt Grant request failed
+
+        CBSD <-- PC: GrantResponse(Failed)
+
+    else Grant request success
+
+        CBSD <-- PC: GrantResponse(Success)
+        CBSD -> PC: HeartBeat(for Grant)
+        
+        alt Grant HeartBeat request failed
+           
+            CBSD <-- PC: HeartBeatResponse(Failed)
+        
+        else Grant HeartBeat request Authorised
+           
+            CBSD <-- PC: HeartBeatResponse(Authorised)
+        
+        end
+    end
+end
+
+
+deactivate PC
+deactivate CBSD
+
+PC -> RC: ?
+
+PC <- RC: ?
+
+
+
+loop while true
+    RC -> SAS: ?
+    RC <- SAS: ?
+end
+   
+   
+CBSD -> PC: DeregistrationRequest
+
+CBSD <- PC: DeregistrationResponse
+
+
+@enduml

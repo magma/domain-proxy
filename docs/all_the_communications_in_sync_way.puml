@@ -1,0 +1,188 @@
+@startuml
+
+participant CBSD
+participant PC
+participant PC2
+participant PC3
+participant RC
+participant SASClient
+participant SAS
+
+== Registration ==
+
+activate CBSD
+
+CBSD -> PC: RegistrationRequest
+
+activate PC    
+
+PC -> RC: RegistrationRequest
+    
+    activate RC    
+    
+    RC -> SASClient: RegistrationRequest
+    
+    activate SASClient
+        SASClient -> SAS: RegistrationRequest
+        activate SAS
+            SAS -> SAS: CBSD Registration
+            SASClient <-- SAS: RegistrationResponse( Success )
+        deactivate SAS
+        RC <-- SASClient: RegistrationResponse( Success )
+    deactivate SASClient
+    
+    PC <-- RC: RegistrationResponse( Success )
+    
+    deactivate RC    
+
+CBSD <-- PC: RegistrationResponse( Success )
+deactivate PC
+
+== Spectrum Inquiry Request ==
+
+CBSD -> PC: Spectrum Inquiry Request
+
+activate PC    
+
+PC -> RC: Spectrum Inquiry Request
+    
+    activate RC    
+    
+    RC -> SASClient: Spectrum Inquiry Request
+    
+    activate SASClient
+        SASClient -> SAS: Spectrum Inquiry Request
+        activate SAS
+            SAS -> SAS: Spectrum Inquiry
+            SASClient <-- SAS: Spectrum Inquiry Response( Success )
+        deactivate SAS
+        RC <-- SASClient: Spectrum Inquiry Response( Success )
+    deactivate SASClient
+    
+    PC <-- RC: Spectrum Inquiry Response( Success )
+    
+    deactivate RC    
+
+CBSD <-- PC: Spectrum Inquiry Response( Success )
+deactivate PC
+
+== Grant Request ==
+
+CBSD -> PC: Grant Request
+
+activate PC    
+
+PC -> RC: Grant Request
+    
+    activate RC    
+    
+    RC -> SASClient: Grant Request
+    
+    activate SASClient
+        SASClient -> SAS: Grant Request
+        activate SAS
+            SAS -> SAS: Grant Creation
+            SASClient <-- SAS: Grant Response( Success )
+        deactivate SAS
+        RC <-- SASClient: Grant Response( Success )
+    deactivate SASClient
+    
+    PC <-- RC: Grant Response( Success )
+    
+    deactivate RC    
+
+CBSD <-- PC: Grant Response( Success )
+deactivate PC
+
+== Synchronisation over HeartBeats ==
+
+loop while true
+CBSD -> PC: HeartBeat(for Grant)
+
+activate PC    
+
+PC -> RC: HeartBeat(for Grant)
+    
+    activate RC    
+    
+    RC -> SASClient: HeartBeat(for Grant)
+    
+    activate SASClient
+        SASClient -> SAS: HeartBeat(for Grant)
+        activate SAS
+            SAS -> SAS: Grant Confirm
+            SASClient <-- SAS: HeartBeatResponse(Authorised)
+        deactivate SAS
+        RC <-- SASClient: HeartBeatResponse(Authorised)
+    deactivate SASClient
+    
+    PC <-- RC: HeartBeatResponse(Authorised)
+    
+    deactivate RC    
+
+CBSD <-- PC: HeartBeatResponse(Authorised)
+deactivate PC
+
+CBSD -> CBSD: Start/Continue\n Transmition
+
+end
+
+== Grant Release ==
+
+CBSD -> PC: Relinquishment Request
+
+activate PC    
+
+PC -> RC: Relinquishment Request
+    
+    activate RC    
+    
+    RC -> SASClient: Relinquishment Request
+    
+    activate SASClient
+        SASClient -> SAS: Relinquishment Request
+        activate SAS
+            SAS -> SAS: Grant Release
+            SASClient <-- SAS: Relinquishment Response
+        deactivate SAS
+        RC <-- SASClient: Relinquishment Response
+    deactivate SASClient
+    
+    PC <-- RC: Relinquishment Response
+    
+    deactivate RC    
+
+CBSD <-- PC: Relinquishment Response
+deactivate PC
+
+== CBSD Deregistration ==
+
+CBSD -> PC: Deregistration Request
+
+activate PC    
+
+PC -> RC: Deregistration Request
+    
+    activate RC    
+    
+    RC -> SASClient: Deregistration Request
+    
+    activate SASClient
+        SASClient -> SAS: Deregistration Request
+        activate SAS
+            SAS -> SAS: CBSD Deregistration
+            SASClient <-- SAS: Deregistration Response
+        deactivate SAS
+        RC <-- SASClient: Grant Response( Success )
+    deactivate SASClient
+    
+    
+    PC <-- RC: Deregistration Response
+    
+    deactivate RC    
+
+CBSD <-- PC: Deregistration Response
+deactivate PC
+deactivate CBSD
+
+@enduml

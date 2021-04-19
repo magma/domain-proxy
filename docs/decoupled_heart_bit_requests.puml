@@ -1,0 +1,51 @@
+@startuml
+
+participant CBSD
+participant PC
+participant RC1
+participant RC_DB
+participant RC2
+participant SASClient
+participant SAS
+
+== Registration ==
+
+CBSD -> PC: HeartBeat\nRequest
+activate CBSD
+activate PC    
+PC -> RC1: HeartBeat\nRequest
+    
+    activate RC1    
+    RC1 -> RC_DB: Check HeartBeat\nRequest in DB
+    RC1 -> RC_DB: Store HeartBeat\nRequest in DB
+    loop Poll for status 
+        RC1 -> RC_DB: Check HeartBeat\nRequest status
+    end
+    PC <-- RC1: HeartBeat\nResponse(Success)
+    deactivate RC1    
+CBSD <-- PC: HeartBeat\nResponse(Success)
+deactivate PC
+
+deactivate CBSD
+
+loop Poll for Pending requests 
+    RC2 <- SASClient: Get pending\n HeartBeat Requests
+    activate RC2
+    activate SASClient
+    RC2 -> RC_DB: Get Pending HeartBeat Requests
+    RC2 --> SASClient: Pending\n HeartBeat Requests
+    deactivate RC2
+    SASClient -> SAS: Batch HeartBeat\nRequest
+    activate SAS
+        SAS -> SAS: CBSD heartbeat update
+        SASClient <-- SAS: Batch HeartBeat\nResponse(Success)
+    deactivate SAS
+    RC2 <- SASClient: Update Pending\n HeartBeat Requests(Success)
+    activate RC2
+    RC2 -> RC_DB: Update Pending Requests
+    RC2 --> SASClient: Update Pending\n HeartBeat Requests(Success)
+    deactivate SASClient
+    deactivate RC2
+end        
+
+@enduml
