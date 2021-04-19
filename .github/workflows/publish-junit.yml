@@ -12,9 +12,8 @@ jobs:
     name: Integration test results
     runs-on: ubuntu-latest
     if: >
-      github.event.workflow_run.conclusion != 'skipped' && (
-      github.event.sender.login == 'dependabot[bot]' ||
-      github.event.workflow_run.head_repository.full_name == github.repository )
+      github.event.workflow_run.conclusion != 'skipped' &&
+      github.event.workflow_run.head_repository.full_name == github.repository 
     steps:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
