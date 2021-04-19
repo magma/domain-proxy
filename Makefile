@@ -1,3 +1,4 @@
+SHELL:=/usr/bin/bash
 .PHONY: run
 run: init dev
 
@@ -14,7 +15,7 @@ clean:
 
 .PHONY: dev
 dev:
-	skaffold dev
+	skaffold dev --force=true
 
 .PHONY: _build_ci
 _build_ci: _install_skaffold_ci
@@ -43,6 +44,13 @@ _ci_init:
 	kubectl wait --for=condition=ClusterAvailable --timeout=1h RabbitmqCluster/rabbitmq
 
 .PHONY: _ci_test
-_ci_test:
-	skaffold run
-	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job
+_ci_test: _install_skaffold_ci
+	skaffold run --force=true
+	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
+	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
+	wait -n 1 2
+	kubectl logs -l type=integration-tests
+	@set -e;\
+	SUCCESS=$$(kubectl get jobs configuration-controller-tests-job -o jsonpath='{.status.succeeded}');\
+	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
+	if [[ $$SUCCESS != '1' ]]; then exit 1; fi

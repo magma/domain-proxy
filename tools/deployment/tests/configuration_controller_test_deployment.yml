@@ -4,6 +4,9 @@ metadata:
   name: configuration-controller-tests-job
 spec:
   template:
+    metadata:
+      labels:
+        type: integration-tests
     spec:
       restartPolicy: Never
       containers:
@@ -30,4 +33,4 @@ spec:
         hostPath:
           path: /tmp/test-results
           type: DirectoryOrCreate
-  backoffLimit: 10
+  backoffLimit: 3

@@ -1,11 +1,18 @@
-name: Test and build configuration controller
+name: Configuration controller unit tests
 
 on: 
-  push:
   pull_request:
+    branches:
+      - 'master'
     paths:
       - "configuration_controller/**"
-      - ".github/workflows/configuration_controller.yml"
+      - ".github/workflows/configuration-controller.yml"
+  push:
+    branches:
+      - '!master'
+    paths:
+      - "configuration_controller/**"
+      - ".github/workflows/configuration-controller.yml"
 
 jobs:
   configuration_controller_unit_tests:
@@ -45,46 +52,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest tests/unit
-
-  configuration_controller_build_and_integation_tests:
-    name: "Configuration controller integration tests"
-    needs: configuration_controller_unit_tests
-    runs-on: ubuntu-latest
-    env:
-      SERVICE: "configuration-controller"
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build image
-      run: |
-        make _build_ci
-
-    - name: Install Minikube
-      uses: manusa/actions-setup-minikube@v2.3.1
-      with:
-        minikube version: 'v1.18.1'
-        kubernetes version: 'v1.20.2'
-        github token: ${{ secrets.GITHUB_TOKEN }}
-        start args: "--addons=ingress --memory=6954m"
-        driver: "docker"
-
-    - name: Setup Minikube
-      run: |
-        make _ci_init
-
-    - name: Get minikube IP.
-      run: |
-        minikube ip
-        mkdir -p /tmp/test-results
-        minikube mount /tmp/test-results:/tmp/test-results &
-
-    - name: Run integration tests
-      run: | 
-        make _ci_test
-
-    - name: Upload integration test results
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results
-        path: /tmp/test-results/
