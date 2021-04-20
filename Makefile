@@ -1,4 +1,5 @@
-SHELL:=/usr/bin/bash
+SHELL:=/bin/bash
+
 .PHONY: run
 run: init dev
 
