@@ -17,7 +17,7 @@ PC -> RC1: Registration\nRequest
     activate RC1    
     RC1 -> RC_DB: Check Registration\nRequest  status in DB
     RC1 -> RC_DB: Store Registration\nRequest in DB
-    PC <-- RC1: Registration\nResponse(Success)
+    PC <-- RC1: Registration\nRequest status
     deactivate RC1    
 
 loop Poll for status 
