@@ -1,0 +1,72 @@
+@startuml
+
+node API_GATEWAY
+
+node CBSD1
+node Protocol1LB
+node ProtocolController1.1
+node ProtocolController1.2
+
+Protocol1LB --- ProtocolController1.1
+Protocol1LB --- ProtocolController1.2
+
+node CBSD2
+node Protocol2LB
+node ProtocolController2.1
+node ProtocolController2.2
+
+Protocol2LB --- ProtocolController2.1
+Protocol2LB --- ProtocolController2.2
+
+node CBSD3
+node Protocol3LB
+node ProtocolController3.1
+node ProtocolController3.2
+
+Protocol3LB --- ProtocolController3.1
+Protocol3LB --- ProtocolController3.2
+
+CBSD1 -- API_GATEWAY
+CBSD2 -- API_GATEWAY
+CBSD3 -- API_GATEWAY
+API_GATEWAY -- Protocol1LB
+API_GATEWAY -- Protocol2LB
+API_GATEWAY -- Protocol3LB
+
+node RadioControllerLB
+node RadioController1
+node RadioController2
+node RadioController3
+
+
+database RadioControllerDB
+
+RadioControllerDB -- RadioController1
+RadioControllerDB -- RadioController2
+RadioControllerDB -- RadioController3
+
+
+RadioControllerLB -- RadioController1
+RadioControllerLB -- RadioController2
+RadioControllerLB -- RadioController3
+
+ProtocolController1.1 --- RadioControllerLB
+ProtocolController1.2 --- RadioControllerLB
+ProtocolController2.1 --- RadioControllerLB
+ProtocolController2.2 --- RadioControllerLB
+ProtocolController3.1 --- RadioControllerLB
+ProtocolController3.2 --- RadioControllerLB
+
+node FakeRadioControllerLB
+node SASClient
+node SAS_API_Gateway
+
+RadioController1 -- FakeRadioControllerLB
+RadioController2 -- FakeRadioControllerLB
+RadioController3 -- FakeRadioControllerLB
+
+
+FakeRadioControllerLB -- SASClient
+ SASClient -- SAS_API_Gateway
+
+@enduml
