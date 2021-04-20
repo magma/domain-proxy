@@ -1,0 +1,55 @@
+@startuml
+
+participant CBSD
+participant PC
+participant RC1
+participant RC_DB
+participant RC2
+participant SASClient
+participant SAS
+
+== Registration ==
+
+CBSD -> PC: Registration\nRequest
+activate CBSD
+activate PC    
+PC -> RC1: Registration\nRequest
+    activate RC1    
+    RC1 -> RC_DB: Check Registration\nRequest  status in DB
+    RC1 -> RC_DB: Store Registration\nRequest in DB
+    PC <-- RC1: Registration\nResponse(Success)
+    deactivate RC1    
+
+loop Poll for status 
+        PC -> RC1: Check Registration\nRequest status
+        activate RC1    
+        PC <-- RC1: Registration\nRequest status
+        deactivate RC1
+end
+
+CBSD <-- PC: Registration\nResponse(Success)
+deactivate PC
+
+deactivate CBSD
+
+loop Poll for Pending requests 
+    RC2 <- SASClient: Get pending\n Registration Requests
+    activate RC2
+    activate SASClient
+    RC2 -> RC_DB: Get Pending Requests
+    RC2 --> SASClient: Pending\n Registration Requests
+    deactivate RC2
+    SASClient -> SAS: Batch Registration\nRequest
+    activate SAS
+        SAS -> SAS: CBSD Registration
+        SASClient <-- SAS: Batch Registration\nResponse(Success)
+    deactivate SAS
+    RC2 <- SASClient: Update Pending\n Registration Requests(Success)
+    activate RC2
+    RC2 -> RC_DB: Update Pending Requests
+    RC2 --> SASClient: Update Pending\n Registration Requests(Success)
+    deactivate SASClient
+    deactivate RC2
+end        
+
+@enduml
