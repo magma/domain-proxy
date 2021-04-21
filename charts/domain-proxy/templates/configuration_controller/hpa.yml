@@ -1,0 +1,28 @@
+{{- if .Values.configuration_controller.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "domain-proxy.fullname" . }}
+  labels:
+    {{- include "domain-proxy.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "domain-proxy.fullname" . }}
+  minReplicas: {{ .Values.configuration_controller.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.configuration_controller.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.configuration_controller.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.configuration_controller.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.configuration_controller.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.configuration_controller.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

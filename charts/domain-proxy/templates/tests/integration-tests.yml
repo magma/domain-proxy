@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-integration-tests"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: {{ .Release.Name }}-integration-tests
+      image: "{{ .Values.configuration_controller.name }}-tests"
+      imagePullPolicy: {{ .Values.configuration_controller.imageConfig.pullPolicy | quote }}
+      args:
+        - "-m"
+        -  "pytest" 
+        - "-vvv"
+        - "tests/integration"
+        - "--junitxml=/backend/configuration_controller/test-results/test_report.xml"
+      volumeMounts:
+        - name: test-results
+          mountPath: /backend/configuration_controller/test-results
+        - name: certificates
+          mountPath: /backend/configuration_controller/certs
+          readOnly: true
+  volumes:
+    - name: certificates
+      projected:
+        sources:
+          - secret:
+              name: certificate-certs
+          - secret:
+              name: certificate-keys
+          - secret:
+              name: rabbitmq-secret
+    - name: test-results
+      hostPath:
+        path: /tmp/test-results
+        type: DirectoryOrCreate
+
