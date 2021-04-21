@@ -1,0 +1,11 @@
+apiVersion: v2
+name: domain-proxy
+description: A Helm chart for domain-proxy project
+keywords:
+  - magma
+  - domain-proxy
+sources:
+  - https://github.com/magma/domain-proxy
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
