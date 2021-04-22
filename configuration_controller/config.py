@@ -16,7 +16,7 @@ class Config:
     # Security
     CC_CERT_PATH = os.environ.get('CC_CERT_PATH', '/backend/configuration_controller/certs/device_c.cert')
     CC_SSL_KEY_PATH = os.environ.get('CC_SSL_KEY_PATH', '/backend/configuration_controller/certs/device_c.key')
-    SAS_CERT_PATH = os.environ.get('SAS_CERT_PATH', '')
+    SAS_CERT_PATH = os.environ.get('SAS_CERT_PATH', '/backend/configuration_controller/certs/root_ca.cert')
 
 
 class DevelopmentConfig(Config):
