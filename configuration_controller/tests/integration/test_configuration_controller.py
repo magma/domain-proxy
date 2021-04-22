@@ -5,6 +5,7 @@ import pika as pika
 from parameterized import parameterized
 
 from configuration_controller.consumer.consumer import RequestsConsumer
+from configuration_controller.request_router.exceptions import RequestRouterException
 from configuration_controller.request_router.request_router import RequestRouter
 from configuration_controller.run import get_config, process_requests
 from configuration_controller.tests.fixtures.fake_request_queues.deregistration_requests import deregistration_requests
@@ -14,6 +15,11 @@ from configuration_controller.tests.fixtures.fake_request_queues.registration_re
 from configuration_controller.tests.fixtures.fake_request_queues.relinquishment_requests import relinquishment_requests
 from configuration_controller.tests.fixtures.fake_request_queues.spectrum_inquiry_requests import \
     spectrum_inquiry_requests
+
+
+CORRECT_CERT_PATH = '/backend/configuration_controller/certs/root_ca.cert'
+INCORRECT_CERT_PATH = '/backend/configuration_controller/certs/device_b_ca.cert'
+NONEXISTENT_CERT_PATH = '/nonexistent/cert/path.cert'
 
 
 class ConfigurationControllerTestCase(unittest.TestCase):
@@ -36,7 +42,7 @@ class ConfigurationControllerTestCase(unittest.TestCase):
             cert_path=self.config.CC_CERT_PATH,
             ssl_key_path=self.config.CC_SSL_KEY_PATH,
             request_mapping_file_path=self.config.REQUEST_MAPPING_FILE_PATH,
-            ssl_verify=False,
+            ssl_verify='',
         )
 
     def tearDown(self):
@@ -71,3 +77,27 @@ class ConfigurationControllerTestCase(unittest.TestCase):
 
         # Then
         self.assertEqual(sas_response_array_len, len(sas_responses[0].json()[sas_response_obj]))
+
+    def test_ssl_enabled_dp_sas_connections_pass_for_correct_sas_cert(self):
+        # Given
+        self.router.ssl_verify = CORRECT_CERT_PATH
+        self.populate_queue("heartbeatRequest")
+
+        # When
+        sas_responses = process_requests(self.consumer, self.router)
+
+        # Then
+        self.assertEqual(200, sas_responses[0].status_code)
+
+    @parameterized.expand([
+        (INCORRECT_CERT_PATH, ),
+        (NONEXISTENT_CERT_PATH, ),
+    ])
+    def test_ssl_enabled_dp_sas_connections_fails_for_incorrect_sas_cert(self, cert_path):
+        # Given
+        self.router.ssl_verify = cert_path
+        self.populate_queue("heartbeatRequest")
+
+        # When / Then
+        with self.assertRaises(RequestRouterException):
+            process_requests(self.consumer, self.router)
