@@ -33,7 +33,7 @@ def run():
         cert_path=config.CC_CERT_PATH,
         ssl_key_path=config.CC_SSL_KEY_PATH,
         request_mapping_file_path=config.REQUEST_MAPPING_FILE_PATH,
-        ssl_verify=False,  # TODO put an actual path to SAS cert here
+        ssl_verify=config.SAS_CERT_PATH
     )
     scheduler.add_job(
         process_requests,

@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List
 
 import requests
@@ -18,7 +19,7 @@ class RequestRouter:
                  cert_path: str,
                  ssl_key_path: str,
                  request_mapping_file_path: str,
-                 ssl_verify: bool):
+                 ssl_verify: str):
         self.sas_url = sas_url
         self.rc_ingest_url = rc_ingest_url
         self.cert_path = cert_path
