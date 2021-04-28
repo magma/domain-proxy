@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy-api-gateway
+      type: tests
+  template:
+    metadata:
+      labels:
+        app: envoy-api-gateway
+        type: tests
+    spec:
+      containers:
+      - name: envoy-api-gateway
+        image: envoyproxy/envoy:v1.18.2
+        command:
+          - /usr/local/bin/envoy
+          - -c
+          - /var/lib/envoy/envoy.yaml
+        volumeMounts:
+        - name: certificates
+          mountPath: /opt/server/certs
+          readOnly: true
+        - name: envoy-config
+          mountPath: /var/lib/envoy
+      volumes:
+      - name: certificates
+        projected:
+          sources:
+          - secret:
+              name: certificate-certs
+          - secret:
+              name: certificate-keys
+      - name: envoy-config
+        configMap:
+          name: envoy-front-proxy-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-service
+spec:
+  type: NodePort
+  ports:
+    - name: https
+      port: 8080
+      targetPort: 8080
+      nodePort: 30444
+  selector:
+    app: envoy-api-gateway
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envoy-front-proxy-config
+data:
+  envoy.yaml: |
+        static_resources:
+          listeners:
+          - name: sas_service
+            address:
+              socket_address:
+                address: 0.0.0.0
+                port_value: 8080
+            filter_chains:
+            - filters:
+              - name: envoy.filters.network.http_connection_manager
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                  stat_prefix: ingress_http
+                  access_log:
+                  - name: envoy.access_loggers.stdout
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                  http_filters:
+                  - name: envoy.filters.http.router
+                  route_config:
+                    name: local_route
+                    virtual_hosts:
+                    - name: local_service
+                      domains: ["*"]
+                      routes:
+                      - match:
+                          prefix: "/sas"
+                        route:
+                          cluster: sas_interface
+
+          clusters:
+          - name: sas_interface
+            connect_timeout: 30s
+            type: LOGICAL_DNS
+            dns_lookup_family: V4_ONLY
+            load_assignment:
+              cluster_name: sas_interface
+              endpoints:
+              - lb_endpoints:
+                - endpoint:
+                    address:
+                      socket_address:
+                        address: sas-service
+                        port_value: 8080
