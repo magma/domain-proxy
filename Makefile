@@ -48,10 +48,11 @@ _ci_init:
 _ci_test: _install_skaffold_ci
 	skaffold run --force=true
 	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
-	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
+	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job && $(exit 1) & \
 	wait -n 1 2
 	kubectl logs -l type=integration-tests
 	@set -e;\
 	SUCCESS=$$(kubectl get jobs configuration-controller-tests-job -o jsonpath='{.status.succeeded}');\
 	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
 	if [[ $$SUCCESS != '1' ]]; then exit 1; fi
+
