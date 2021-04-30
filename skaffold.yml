@@ -39,6 +39,6 @@ profiles:
     kubectl:
       manifests:
         - ./tools/deployment/tests/configuration_controller_*.yml
-        - ./tools/deployment/tests/sas_protocol_controller_*.yml
+  #      - ./tools/deployment/tests/sas_protocol_controller_*.yml
   activation:
   - env: CI=true

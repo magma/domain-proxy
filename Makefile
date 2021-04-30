@@ -53,6 +53,7 @@ _ci_test: _install_skaffold_ci
 	kubectl logs -l type=integration-tests
 	kubectl get job
 	kubectl get pod
+	kubectl get pod -l type=integration-tests
 	@set -e;\
 	SUCCESS=$$(kubectl get jobs configuration-controller-tests-job -o jsonpath='{.status.succeeded}');\
 	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
