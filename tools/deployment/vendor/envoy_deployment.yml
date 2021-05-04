@@ -105,5 +105,5 @@ data:
                 - endpoint:
                     address:
                       socket_address:
-                        address: sas-service
+                        address: domain-proxy-protocol-controller
                         port_value: 8080

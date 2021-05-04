@@ -1,10 +1,9 @@
-apiVersion: apps/v1
+apiVersion: {{ template "domain-proxy.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ include "domain-proxy.configuration_controller.fullname" . }}
   labels:
-    {{- include "domain-proxy.labels" . | nindent 4 }}
-    {{- include "domain-proxy.configuration_controller.matchLabels" . | nindent 4 }}
+    {{- include "domain-proxy.configuration_controller.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.configuration_controller.autoscaling.enabled }}
   replicas: {{ .Values.configuration_controller.replicaCount }}
@@ -19,19 +18,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "domain-proxy.configuration_controller.matchLabels" . | nindent 8 }}
+        {{- include "domain-proxy.configuration_controller.labels" . | nindent 8 }}
     spec:
       {{- with .Values.configuration_controller.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "domain-proxy.serviceAccountName" . }}
+      serviceAccountName: {{ include "domain-proxy.configuration_controller.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.configuration_controller.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Values.configuration_controller.name }}
-          securityContext:
-            {{- toYaml .Values.configuration_controller.securityContext | nindent 12 }}
           image: "{{ .Values.configuration_controller.image }}"
           imagePullPolicy: {{ .Values.configuration_controller.imageConfig.pullPolicy }}
           {{- if .Values.configuration_controller.livenessProbe }}
@@ -56,8 +53,6 @@ spec:
                   name: certificate-certs
               - secret:
                   name: certificate-keys
-              - secret:
-                 name: rabbitmq-secret
       {{- with .Values.configuration_controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
