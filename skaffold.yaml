@@ -28,6 +28,8 @@ deploy:
         artifactOverrides:
           configuration_controller:
             image: configuration-controller
+          protocol_controller:
+            image: protocol-controller
 
 profiles:
   - name: ci

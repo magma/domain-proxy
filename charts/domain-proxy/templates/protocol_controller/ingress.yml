@@ -1,8 +1,8 @@
-{{- if .Values.configuration_controller.ingress.enabled -}}
-{{- $fullName := include "domain-proxy.configuration_controller.fullname" . -}}
-{{- $svcPort := .Values.configuration_controller.service.port -}}
+{{- if .Values.protocol_controller.ingress.enabled -}}
+{{- $fullName := include "domain-proxy.protocol_controller.fullname" . -}}
+{{- $svcPort := .Values.protocol_controller.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: apiVersion: {{ template "domain-proxy.ingress.apiVersion" . }}
+apiVersion: {{ template "domain-proxy.ingress.apiVersion" . }}
 {{- else -}}
 apiVersion: extensions/v1beta1
 {{- end }}
@@ -11,14 +11,14 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "domain-proxy.configuration_controller.labels" . | nindent 4 }}
-  {{- with .Values.configuration_controller.ingress.annotations }}
+  {{- with .Values.protocol_controller.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.configuration_controller.ingress.tls }}
+  {{- if .Values.protocol_controller.ingress.tls }}
   tls:
-    {{- range .Values.configuration_controller.ingress.tls }}
+    {{- range .Values.protocol_controller.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -27,7 +27,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.configuration_controller.ingress.hosts }}
+    {{- range .Values.protocol_controller.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
