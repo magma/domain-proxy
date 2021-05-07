@@ -47,12 +47,9 @@ spec:
               readOnly: true
       volumes:
         - name: certificates
-          projected:
-            sources:
-              - secret:
-                  name: certificate-certs
-              - secret:
-                  name: certificate-keys
+          secret:
+            secretName: certificates
+
       {{- with .Values.configuration_controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

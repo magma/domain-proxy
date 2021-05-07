@@ -132,6 +132,13 @@ Return the appropriate apiVersion for ingress.
 {{- print "networking.k8s.io/v1beta1" -}}
 {{- end -}}
 
+{{/*
+Return the appropriate apiVersion for HTTPProxy.
+*/}}
+{{- define "httpproxy.apiVersion" -}}
+{{- print "projectcontour.io/v1" -}}
+{{- end -}}
+
 Return the appropriate apiVersion for rbac.
 */}}
 {{- define "rbac.apiVersion" -}}

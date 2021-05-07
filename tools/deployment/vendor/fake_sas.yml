@@ -31,12 +31,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: certificates
-        projected:
-          sources:
-          - secret:
-              name: certificate-certs
-          - secret:
-              name: certificate-keys
+        secret:
+          secretName: certificates
 
 ---
 

@@ -4,3 +4,7 @@
 __pycache__
 *.pyc
 *.swp
+*.tgz
+Chart.lock
+tools/deployment/certificates/certs
+charts/domain-proxy/certificates
