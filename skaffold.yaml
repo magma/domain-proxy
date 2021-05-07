@@ -17,6 +17,9 @@ build:
           ENV: 'tests'
 deploy:
   helm:
+    flags:
+      install:
+        - "--debug"
     releases:
       - name: domain-proxy
         chartPath: ./charts/domain-proxy
@@ -24,7 +27,14 @@ deploy:
           - ./charts/domain-proxy/values.yaml
         namespace: default
         version: "0.1.0"
-        wait: true
+        #wait: true
+        setValues:
+          protocol_controller:
+            tlsConfig:
+              paths:
+                cert: "certificates/protocol_controller/domain_proxy_bundle.cert"
+                key:  "certificates/protocol_controller/domain_proxy_server.key"
+                ca:  "certificates/protocol_controller/ca.cert"
         artifactOverrides:
           configuration_controller:
             image: configuration-controller

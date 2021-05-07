@@ -4,11 +4,11 @@ SHELL:=/bin/bash
 run: init dev
 
 .PHONY: init
-init: start_minikube _ci_init
+init: start_minikube _ci_init _contour_install
 
 .PHONY: start_minikube
 start_minikube:
-	minikube start --addons ingress
+	minikube start
 
 .PHONY: clean
 clean:
@@ -16,7 +16,8 @@ clean:
 
 .PHONY: dev
 dev:
-	skaffold dev --force=true
+	skaffold dev
+	#skaffold dev --force=true
 
 .PHONY: _build_ci
 _build_ci: _install_skaffold_ci
@@ -37,16 +38,31 @@ ifeq (, $(shell which skaffold))
 endif
 
 .PHONY: _ci_init
-_ci_init:
-	kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml
-	kubectl wait --for=condition=Established --timeout=1h crd/rabbitmqclusters.rabbitmq.com
+_ci_init: _generate_certificates
+	kubectl delete secret certificates --ignore-not-found
+	kubectl create secret generic certificates --from-file=tools/deployment/certificates/certs
 	kubectl apply -f ./tools/deployment/vendor
 	kubectl wait --for=condition=Available --timeout=1h Deployment/fake-sas-deployment
-	kubectl wait --for=condition=ClusterAvailable --timeout=1h RabbitmqCluster/rabbitmq
+
+.PHONY: _contour_install
+_contour_install:
+	helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm repo update
+	helm upgrade --install contour bitnami/contour --version 4.3.2
+
+.PHONY: _generate_certificates
+_generate_certificates:
+	tools/deployment/certificates/generate_fake_certs.sh
+	ln -s -f ../../../../tools/deployment/certificates/certs/domain_proxy_bundle.cert \
+	charts/domain-proxy/certificates/protocol_controller/domain_proxy_bundle.cert
+	ln -s -f ../../../../tools/deployment/certificates/certs/domain_proxy_server.key \
+	charts/domain-proxy/certificates/protocol_controller/domain_proxy_server.key
+	ln -s -f ../../../../tools/deployment/certificates/certs/ca.cert \
+	charts/domain-proxy/certificates/protocol_controller/ca.cert
 
 .PHONY: _ci_test
 _ci_test: _install_skaffold_ci
-	skaffold run --force=true
+	skaffold run
 	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
 	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
 	wait -n 1 2

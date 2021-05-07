@@ -43,18 +43,6 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.protocol_controller.resources | nindent 12 }}
-          volumeMounts:
-            - name: certificates
-              mountPath: /backend/protocol_controller/certs
-              readOnly: true
-      volumes:
-        - name: certificates
-          projected:
-            sources:
-              - secret:
-                  name: certificate-certs
-              - secret:
-                  name: certificate-keys
       {{- with .Values.protocol_controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
