@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radio-controller-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radio-controller
+  template:
+    metadata:
+      labels:
+        app: radio-controller
+    spec:
+      containers:
+        - name: radio-controller
+          image: forkington/rc #change to radio-controller when helm chart for radio controller is created
+          ports:
+            - containerPort: 50053
+          imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radio-controller-service
+spec:
+  selector:
+    app: radio-controller
+  ports:
+    - protocol: TCP
+      port: 50053
+      targetPort: 50053

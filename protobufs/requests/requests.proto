@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message RequestPayloadRequest {
+  string payload_type = 1;
+  string payload = 2;
+}
+
+message RequestPayloadResponse {
+  string msg = 1;
+}
+
+service RadioController {
+  rpc Upload (RequestPayloadRequest) returns (RequestPayloadResponse);
+}

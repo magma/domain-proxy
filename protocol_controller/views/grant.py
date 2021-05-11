@@ -1,11 +1,14 @@
-import logging
+from flask import Blueprint, current_app, request
+from flask_json import as_json
 
-from flask import Blueprint, Response
+from protocol_controller.common.upload_request import upload_request
 
 grant_page = Blueprint("grant", __name__)
 
 
 @grant_page.route('/grant', methods=('POST', ))
+@as_json
 def registration():
-    logging.info('Executed grant action')
-    return Response(status=200)
+    client = current_app.extensions["GrpcClient"]
+    grpc_response = upload_request(client, "grant", request.json)
+    return grpc_response.msg, 200

@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote
 
 
 class Config:

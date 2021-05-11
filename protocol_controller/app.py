@@ -1,15 +1,18 @@
 from typing import Type
+
+import grpc
 from flask import Flask
 
 from protocol_controller import config
 from protocol_controller.config import Config
+from protocol_controller.grpc_client.grpc_client import GrpcClient
 from protocol_controller.logger import configure_logger
 from protocol_controller.views.deregistration import deregistration_page
 from protocol_controller.views.grant import grant_page
 from protocol_controller.views.heartbeat import heartbeat_page
 from protocol_controller.views.registration import registration_page
 from protocol_controller.views.relinquishment import relinquishment_page
-from protocol_controller.views.spectrum_inquiry import spectrum_inquiry_page
+from protocol_controller.views.spectrumInquiry import spectrum_inquiry_page
 
 
 def create_app(conf: Type[Config]):
@@ -17,6 +20,7 @@ def create_app(conf: Type[Config]):
     app.config.from_object(conf)
     configure_logger(conf)
     register_pc_blueprints(app)
+    register_extensions(app)
     return app
 
 
@@ -40,3 +44,9 @@ def register_pc_blueprints(app):
 def register_blueprints(app, blueprints, url_prefix):
     for blueprint in blueprints:
         app.register_blueprint(blueprint, url_prefix=url_prefix)
+
+
+def register_extensions(app):
+    grpc_channel = grpc.insecure_channel(f"{app.config['GRPC_SERVICE']}:{app.config['GRPC_PORT']}")
+    grpc_client = GrpcClient(grpc_channel)
+    grpc_client.init_app(app)
