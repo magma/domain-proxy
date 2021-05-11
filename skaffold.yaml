@@ -7,14 +7,18 @@ build:
     sha256: {}
   artifacts:
     - image: protocol-controller
-      context: protocol_controller
+      context: .
+      docker:
+        dockerfile: protocol_controller/Dockerfile
+
     - image: configuration-controller
       context: configuration_controller
-    - image: configuration-controller-tests
-      context: configuration_controller
+
+    - image: radio-controller
+      context: .
       docker:
-        buildArgs:
-          ENV: 'tests'
+        dockerfile: radio_controller/Dockerfile
+
 deploy:
   helm:
     flags:
@@ -40,6 +44,8 @@ deploy:
             image: configuration-controller
           protocol_controller:
             image: protocol-controller
+          radio_controller:
+            image: radio-controller
 
 profiles:
   - name: ci
@@ -47,6 +53,8 @@ profiles:
       - op: remove
         path: /deploy/helm
     build:
+      tagPolicy:
+        sha256: {}
       local:
         push: false
         concurrency: 0
@@ -56,15 +64,18 @@ profiles:
           docker:
             buildArgs:
               ENV: 'tests'
+
         - image: protocol-controller-tests
-          context: protocol_controller
+          context: .
           docker:
+            dockerfile: protocol_controller/Dockerfile
             buildArgs:
               ENV: 'tests'
     deploy:
       kubectl:
         manifests:
           - ./tools/deployment/tests/configuration_controller_*.yml
+          #- ./tools/deployment/tests/sas_protocol_controller_*.yml
     activation:
       - env: CI=true
 

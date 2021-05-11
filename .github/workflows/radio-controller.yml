@@ -1,18 +1,18 @@
-name: Protocol controller unit tests
+name: Radio controller unit tests
 
 on: 
   pull_request:
     branches:
       - 'master'
     paths:
-      - "protocol_controller/**"
-      - ".github/workflows/protocol-controller.yml"
+      - "radio_controller/**"
+      - ".github/workflows/radio-controller.yml"
   push:
     branches:
       - '!master'
     paths:
-      - "protocol_controller/**"
-      - ".github/workflows/protocol-controller.yml"
+      - "radio_controller/**"
+      - ".github/workflows/radio-controller.yml"
 
 jobs:
   configuration_controller_unit_tests:
@@ -21,7 +21,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: protocol_controller
+        working-directory: radio_controller
 
     strategy:
       matrix:

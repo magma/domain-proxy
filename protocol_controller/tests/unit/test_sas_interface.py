@@ -1,13 +1,7 @@
-from typing import Type
+from unittest.mock import patch
 
-from flask import Flask
-from flask_testing import TestCase
 from parameterized import parameterized
-
-from protocol_controller import config
-from protocol_controller.app import create_app
-from protocol_controller.config import Config
-
+from protocol_controller.tests.app_testcase import AppTestCase
 
 REGISTRATION = 'registration'
 DEREGISTRATION = 'deregistration'
@@ -22,12 +16,7 @@ PATCH = 'patch'
 DELETE = 'delete'
 
 
-class SASProtocolControllerTests(TestCase):
-    conf: Type[Config] = config.TestConfig()
-
-    def create_app(self) -> Flask:
-        app = create_app(self.conf)
-        return app
+class SASProtocolControllerTests(AppTestCase):
 
     @parameterized.expand([
         (REGISTRATION, POST, 200),
@@ -61,7 +50,14 @@ class SASProtocolControllerTests(TestCase):
         (SPECTRUM_INQUIRY, PATCH, 405),
         (SPECTRUM_INQUIRY, DELETE, 405),
     ])
-    def test_route_response_200_for_post_and_405_for_other_methods(self, route, method, expected_code):
-        req_method = getattr(self.client, method)
-        response = req_method(f'/sas/v1/{route}', follow_redirects=True)
-        self.assertEqual(response.status_code, expected_code)
+    def test_route_response_200_for_post_and_405_for_other_methods(self, route, method, expected_status):
+        # Given
+        with patch(f'protocol_controller.views.{route}.upload_request') as mockupload:
+            mockupload.return_value.msg = '{"any": "response"}'
+
+            # When
+            req_method = getattr(self.client, method)
+            response = req_method(f'/sas/v1/{route}')
+
+            # Then
+            self.assertEqual(response.status_code, expected_status)

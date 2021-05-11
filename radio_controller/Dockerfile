@@ -1,9 +1,10 @@
 ARG ENV=standard
 FROM python:3.9.2-slim-buster as standard-version
 
-COPY protocol_controller /protocol_controller
+COPY radio_controller /radio_controller
 COPY protobufs /protobufs
-WORKDIR /protocol_controller
+
+WORKDIR /radio_controller
 RUN pip3 install --upgrade pip --no-cache-dir -r requirements.txt
 RUN python -m grpc_tools.protoc -I ../protobufs/requests --python_out=. --grpc_python_out=. ../protobufs/requests/requests.proto
 
@@ -14,6 +15,7 @@ RUN python -m grpc_tools.protoc -I ../protobufs/requests --python_out=. --grpc_p
 FROM ${ENV}-version as final
 ENV PYTHONPATH=$PYTHONPATH:/
 
-EXPOSE 8000
+EXPOSE 50053
 
-CMD ["sh", "entrypoint.sh"]
+ENTRYPOINT ["python"]
+CMD ["run.py"]

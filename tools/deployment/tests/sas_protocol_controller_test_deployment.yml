@@ -10,8 +10,9 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: configuration-controller-tests
-        image: configuration-controller-tests
+      - name: protocol-controller-tests
+        image: protocol-controller-tests
+        command: ["python"]
         args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/protocol_controller/test-results/test_report.xml"]
         volumeMounts:
         - name: test-results
