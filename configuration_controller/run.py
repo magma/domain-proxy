@@ -26,7 +26,7 @@ def cli():
 def run():
     config = get_config()
     scheduler = BackgroundScheduler()
-    consumer = RequestsConsumer(rabbitmq_url=config.RABBITMQ_HOST)
+    consumer = RequestsConsumer()
     router = RequestRouter(
         sas_url=config.SAS_URL,
         rc_ingest_url=config.RC_INGEST_URL,
@@ -57,7 +57,7 @@ def get_config() -> Config:
 def process_requests(consumer, router):
     logger.info('Processing requests')
     sas_responses = []
-    sas_requests = consumer.process_data_events()
+    sas_requests = consumer.process_db_requests()
     for req in consumer.request_list:
         requests_list = sas_requests.get(req)
         if not requests_list:
