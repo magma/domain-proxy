@@ -13,5 +13,4 @@ ENV PYTHONPATH=$PYTHONPATH:/
 
 EXPOSE 8000
 
-ENTRYPOINT ["python"]
-CMD ["run.py"]
+CMD ["sh", "entrypoint.sh"]
