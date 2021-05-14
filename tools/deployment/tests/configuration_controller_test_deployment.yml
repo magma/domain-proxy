@@ -22,7 +22,7 @@ spec:
       volumes:
       - name: certificates
         secret:
-          Secretname: certificates
+          secretName: certificates
       - name: test-results
         hostPath:
           path: /tmp/test-results
