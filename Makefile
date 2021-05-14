@@ -16,8 +16,11 @@ clean:
 
 .PHONY: dev
 dev:
+ifdef CI
+	skaffold dev --force=true
+else
 	skaffold dev
-	#skaffold dev --force=true
+endif
 
 .PHONY: _build_ci
 _build_ci: _install_skaffold_ci
