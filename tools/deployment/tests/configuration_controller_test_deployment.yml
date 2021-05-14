@@ -21,14 +21,8 @@ spec:
           readOnly: true
       volumes:
       - name: certificates
-        projected:
-          sources:
-          - secret:
-              name: certificate-certs
-          - secret:
-              name: certificate-keys
-          - secret:
-              name: rabbitmq-secret
+        secret:
+          Secretname: certificates
       - name: test-results
         hostPath:
           path: /tmp/test-results
