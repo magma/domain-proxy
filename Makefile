@@ -65,7 +65,7 @@ _generate_certificates:
 	charts/domain-proxy/certificates/protocol_controller/ca.cert
 
 .PHONY: _ci_test
-_ci_test: _install_skaffold_ci
+_ci_test: _install_skaffold_ci _contour_install
 	skaffold run
 	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
 	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
@@ -90,3 +90,8 @@ _delete_db: _postgres_db_delete
 _postgres_db_delete:
 	kubectl delete -f ./tools/deployment/vendor/postgresql.yml
 	kubectl delete pvc -l app=postgres-database
+
+.PHONY: _ci_chart_smoke_tests
+_ci_chart_smoke_tests: _install_skaffold_ci _contour_install
+	skaffold run
+	helm test --timeout 10m domain-proxy
