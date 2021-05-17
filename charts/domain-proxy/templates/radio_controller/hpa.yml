@@ -1,0 +1,30 @@
+{{- if .Values.radio_controller.enabled -}}
+{{- if .Values.radio_controller.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "domain-proxy.radio_controller.fullname" . }}
+  labels:
+    {{- include "domain-proxy.radio_controller.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "domain-proxy.radio_controller.fullname" . }}
+  minReplicas: {{ .Values.radio_controller.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.radio_controller.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.radio_controller.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.radio_controller.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.radio_controller.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.radio_controller.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
+{{- end }}

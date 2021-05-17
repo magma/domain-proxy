@@ -47,7 +47,6 @@ Configuration controller labels
 {{ include "domain-proxy.common.metaLabels" . }}
 {{- end -}}
 
-
 {{/*
 Protocol controller match labels
 */}}
@@ -61,6 +60,22 @@ Protocol controller labels
 */}}
 {{- define "domain-proxy.protocol_controller.labels" -}}
 {{ include "domain-proxy.protocol_controller.matchLabels" . }}
+{{ include "domain-proxy.common.metaLabels" . }}
+{{- end -}}
+
+{{/*
+Radio controller match labels
+*/}}
+{{- define "domain-proxy.radio_controller.matchLabels" -}}
+component: {{ .Values.radio_controller.name | quote }}
+{{ include "domain-proxy.common.matchLabels" . }}
+{{- end -}}
+
+{{/*
+Radio controller labels
+*/}}
+{{- define "domain-proxy.radio_controller.labels" -}}
+{{ include "domain-proxy.radio_controller.matchLabels" . }}
 {{ include "domain-proxy.common.metaLabels" . }}
 {{- end -}}
 
@@ -119,6 +134,24 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a fully qualified radio_controller name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+
+{{- define "domain-proxy.radio_controller.fullname" -}}
+{{- if .Values.radio_controller.fullnameOverride -}}
+{{- .Values.radio_controller.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- printf "%s-%s" .Release.Name .Values.radio_controller.name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.radio_controller.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the appropriate apiVersion for deployment.
 */}}
 {{- define "domain-proxy.deployment.apiVersion" -}}
@@ -153,7 +186,7 @@ Return the appropriate apiVersion for rbac.
 Create the name of the service account to use for configuration controller
 */}}
 {{- define "domain-proxy.configuration_controller.serviceAccountName" -}}
-{{- if .Values.protocol_controller.serviceAccount.create }}
+{{- if .Values.configuration_controller.serviceAccount.create }}
 {{- default (include "domain-proxy.fullname" .) .Values.configuration_controller.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.configuration_controller.serviceAccount.name }}
@@ -168,5 +201,16 @@ Create the name of the service account to use for protocol controller
 {{- default (include "domain-proxy.fullname" .) .Values.protocol_controller.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.protocol_controller.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use for radio controller
+*/}}
+{{- define "domain-proxy.radio_controller.serviceAccountName" -}}
+{{- if .Values.radio_controller.serviceAccount.create }}
+{{- default (include "domain-proxy.fullname" .) .Values.radio_controller.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.radio_controller.serviceAccount.name }}
 {{- end }}
 {{- end }}
