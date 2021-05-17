@@ -6,6 +6,7 @@ on:
       - "Integration tests"
     types:
       - completed
+      - requested
 
 jobs:
   integration-test-results:
@@ -23,5 +24,3 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: test-results/**/*.xml
-          pull_request_build: "commit"
-
