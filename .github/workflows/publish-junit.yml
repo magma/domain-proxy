@@ -1,4 +1,4 @@
-name: Unit Test Results
+name: Integration Tests Results
 
 on:
   workflow_run:
@@ -11,8 +11,6 @@ jobs:
   integration-test-results:
     name: Integration test results
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.conclusion != 'skipped'
     steps:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
@@ -25,4 +23,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: test-results/**/*.xml
+          pull_request_build: "commit"
 

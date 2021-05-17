@@ -45,7 +45,8 @@ _ci_init: _generate_certificates
 	kubectl delete secret certificates --ignore-not-found
 	kubectl create secret generic certificates --from-file=tools/deployment/certificates/certs
 	kubectl apply -f ./tools/deployment/vendor
-	kubectl wait --for=condition=Available --timeout=1h Deployment/fake-sas-deployment
+	kubectl wait --for=condition=Available --timeout=600s Deployment/fake-sas-deployment
+	kubectl rollout status --watch --timeout=600s statefulset/postgres-database
 
 .PHONY: _contour_install
 _contour_install:
@@ -74,3 +75,18 @@ _ci_test: _install_skaffold_ci
 	SUCCESS=$$(kubectl get jobs configuration-controller-tests-job -o jsonpath='{.status.succeeded}');\
 	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
 	if [[ $$SUCCESS != '1' ]]; then exit 1; fi
+
+.PHONY: _setup_db
+_setup_db: _postgres_db_setup
+
+.PHONY: _postgres_db_setup
+_postgres_db_setup:
+	kubectl apply -f ./tools/deployment/vendor/postgresql.yml
+
+.PHONY: _delete_db
+_delete_db: _postgres_db_delete
+
+.PHONY: _postgres_db_delete
+_postgres_db_delete:
+	kubectl delete -f ./tools/deployment/vendor/postgresql.yml
+	kubectl delete pvc -l app=postgres-database

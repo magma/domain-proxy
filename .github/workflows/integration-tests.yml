@@ -17,7 +17,7 @@ jobs:
         minikube version: 'v1.18.1'
         kubernetes version: 'v1.20.2'
         github token: ${{ secrets.GITHUB_TOKEN }}
-        start args: "--addons=ingress --memory=6954m"
+        start args: "--memory=6954m"
         driver: "docker"
 
     - name: Setup Minikube
