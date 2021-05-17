@@ -15,8 +15,8 @@ on:
       - ".github/workflows/radio-controller.yml"
 
 jobs:
-  configuration_controller_unit_tests:
-    name: "Protocol controller unit tests"
+  radio_controller_unit_tests:
+    name: "Radion controller unit tests"
     runs-on: ubuntu-latest
 
     defaults:

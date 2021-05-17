@@ -1,3 +1,4 @@
+{{- if .Values.configuration_controller.enabled -}}
 apiVersion: {{ template "domain-proxy.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -62,3 +63,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

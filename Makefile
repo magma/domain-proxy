@@ -66,7 +66,7 @@ _generate_certificates:
 
 .PHONY: _ci_test
 _ci_test: _install_skaffold_ci _contour_install
-	skaffold run
+	skaffold run -p configuration-controller-integration-tests
 	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
 	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
 	wait -n 1 2
