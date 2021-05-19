@@ -14,7 +14,9 @@ build:
       docker:
         dockerfile: protocol_controller/Dockerfile
     - image: configuration-controller
-      context: configuration_controller
+      context: .
+      docker:
+        dockerfile: configuration_controller/Dockerfile
     - image: radio-controller
       context: .
       docker:
@@ -63,6 +65,12 @@ profiles:
         value:
           protocol_controller:
             enabled: false
+          radio_controller:
+            extraEnv:
+              SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://postgres:password@db:5432/dp_test"
+          configuration_controller:
+            extraEnv:
+              SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://postgres:password@db:5432/dp_test"
       - op: add
         path: /deploy/kubectl
         value:
@@ -76,8 +84,9 @@ profiles:
         path: /build/artifacts/-
         value:
           image: configuration-controller-tests
-          context: configuration_controller
+          context: .
           docker:
+            dockerfile: configuration_controller/Dockerfile
             buildArgs:
               ENV: 'tests'
       - op: add

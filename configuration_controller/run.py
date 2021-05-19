@@ -2,19 +2,27 @@ import importlib
 import logging
 import os
 import time
+from typing import Optional
 
 import click
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from requests import Response
 
 from configuration_controller.config import Config
-from configuration_controller.consumer.consumer import RequestsConsumer
+from configuration_controller.mappings.request_response_mapping import request_response
+from configuration_controller.request_consumer.request_db_consumer import RequestDBConsumer
 from configuration_controller.request_formatting.merger import merge_requests
+from configuration_controller.request_router.exceptions import RequestRouterException
 from configuration_controller.request_router.request_router import RequestRouter
-
+from configuration_controller.response_processor.response_db_processor import ResponseDBProcessor
+from configuration_controller.response_processor.strategies.strategies_mapping import processor_strategies
+from db.db import DB
+from db.models import Base
+from db.types import RequestTypes
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("configuration_controller.run")
 
 
 @click.group()
@@ -26,7 +34,14 @@ def cli():
 def run():
     config = get_config()
     scheduler = BackgroundScheduler()
-    consumer = RequestsConsumer()
+    db = DB(
+        uri=config.SQLALCHEMY_DB_URI,
+        encoding=config.SQLALCHEMY_DB_ENCODING,
+        echo=config.SQLALCHEMY_ECHO,
+        future=config.SQLALCHEMY_FUTURE
+    )
+    Base.metadata.create_all(db.engine)  # TODO replace with migrations
+    db.initialize()
     router = RequestRouter(
         sas_url=config.SAS_URL,
         rc_ingest_url=config.RC_INGEST_URL,
@@ -35,12 +50,23 @@ def run():
         request_mapping_file_path=config.REQUEST_MAPPING_FILE_PATH,
         ssl_verify=config.SAS_CERT_PATH
     )
-    scheduler.add_job(
-        process_requests,
-        args=[consumer, router],
-        trigger=IntervalTrigger(seconds=config.REQUEST_PROCESSING_INTERVAL),
-        max_instances=1,
-    )
+    for request_type in RequestTypes:
+        req_type = request_type.value
+        response_type = request_response[req_type]
+        consumer = RequestDBConsumer(request_type=req_type)
+        processor = ResponseDBProcessor(
+            response_type=response_type,
+            request_map_key_func=processor_strategies[req_type]["request_map_key"],
+            response_map_key_func=processor_strategies[req_type]["response_map_key"],
+        )
+        scheduler.add_job(
+            process_requests,
+            args=[consumer, processor, router, db],
+            trigger=IntervalTrigger(
+                seconds=config.REQUEST_PROCESSING_INTERVAL),
+            max_instances=1,
+            name=f"{req_type}_job"
+        )
     scheduler.start()
 
     while True:
@@ -54,19 +80,35 @@ def get_config() -> Config:
     return config_class()
 
 
-def process_requests(consumer, router):
-    logger.info('Processing requests')
-    sas_responses = []
-    sas_requests = consumer.process_db_requests()
-    for req in consumer.request_list:
-        requests_list = sas_requests.get(req)
+def process_requests(
+        consumer: RequestDBConsumer,
+        processor: ResponseDBProcessor,
+        router: RequestRouter,
+        db: DB) -> Optional[Response]:
+
+    with db.session_scope() as session:
+        requests_map = consumer.get_pending_requests(session)
+        requests_type = next(iter(requests_map))
+        requests_list = requests_map[requests_type]
+
         if not requests_list:
-            continue
-        bulked_sas_requests = merge_requests(sas_requests[req])
-        sas_response = router.post_to_sas(bulked_sas_requests)
-        sas_responses.append(sas_response)
-        logger.info(f'{sas_response.json()=}')
-    return sas_responses
+            logger.debug(f"Received no {requests_type} requests.")
+            return
+
+        logger.info(f'Processing {len(requests_list)} {requests_type} requests')
+        bulked_sas_requests = merge_requests(requests_map)
+
+        try:
+            sas_response = router.post_to_sas(bulked_sas_requests)
+            logger.info(f"Sent {bulked_sas_requests} to SAS and got the following response: {sas_response.json()}")
+        except RequestRouterException as e:
+            logging.error(f"Error posting request to SAS: {e}")
+            return
+
+        processor.process_response(requests_list, sas_response, session)
+        session.commit()
+
+        return sas_response
 
 
 if __name__ == '__main__':

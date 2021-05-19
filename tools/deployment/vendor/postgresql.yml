@@ -20,6 +20,8 @@ spec:
             - name: db-disk
               mountPath: /var/lib/postgresql/data
           env:
+            - name: POSTGRES_DB
+              value: "dp"
             - name: POSTGRES_PASSWORD
               value: postgres
             - name: PGDATA
