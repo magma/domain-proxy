@@ -39,12 +39,14 @@ class RequestRouter:
         try:
             request_name = next(iter(request_dict))
         except StopIteration:
-            raise RequestRouterException("Received an empty requests dictionary")
+            raise RequestRouterException(
+                "Received an empty requests dictionary")
 
         try:
             sas_method = self.request_mapping[request_name]
         except KeyError:
-            raise RequestRouterException(f'Unable to find SAS method matching {request_name}')
+            raise RequestRouterException(
+                f'Unable to find SAS method matching {request_name}')
 
         try:
             sas_response = requests.post(
