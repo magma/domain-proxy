@@ -6,7 +6,7 @@ from configuration_controller.custom_types.custom_types import DBRequest, Merged
 
 def merge_requests(request_map: Dict[str, List[DBRequest]]) -> MergedRequests:
     """
-    This function receives an map of Request objects and merges them
+    This function receives a map of Request objects and merges them
     into one JSON object with request names as keys
     and sub-arrays of payload values
 
