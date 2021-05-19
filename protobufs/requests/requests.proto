@@ -1,14 +1,22 @@
 syntax = "proto3";
 
-message RequestPayloadRequest {
-  string payload_type = 1;
-  string payload = 2;
+message RequestPayload {
+  string payload = 1;
 }
 
-message RequestPayloadResponse {
-  string msg = 1;
+message RequestDbIds {
+  repeated int64 ids = 1;
+}
+
+message RequestDbId {
+  int64 id = 1;
+}
+
+message ResponsePayload {
+  string payload = 1;
 }
 
 service RadioController {
-  rpc Upload (RequestPayloadRequest) returns (RequestPayloadResponse);
+  rpc UploadRequests (RequestPayload) returns (RequestDbIds);
+  rpc GetResponse (RequestDbId) returns (ResponsePayload);
 }
