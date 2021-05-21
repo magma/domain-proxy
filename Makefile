@@ -1,4 +1,8 @@
-SHELL:=/bin/bash
+SHELL := /bin/bash
+export MINIKUBE_HOME ?= $(shell echo ~/.minikube)
+export KUBECONFIG ?= $(shell echo ~/.kube/config)
+export CERTS := $(shell mktemp -d /tmp/certs.XXXXXXXXXX)
+
 
 .PHONY: run
 run: init dev
@@ -41,7 +45,7 @@ ifeq (, $(shell which skaffold))
 endif
 
 .PHONY: _ci_init
-_ci_init: _generate_certificates
+_ci_init: _generate_certificates _generate_harness_config
 	kubectl delete secret certificates --ignore-not-found
 	kubectl create secret generic certificates --from-file=tools/deployment/certificates/certs
 	kubectl apply -f ./tools/deployment/vendor
@@ -53,6 +57,7 @@ _contour_install:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
 	helm upgrade --install contour bitnami/contour --version 4.3.2
+	kubectl wait --for=condition=Available --timeout=600s Deployment/contour-contour
 
 .PHONY: _generate_certificates
 _generate_certificates:
@@ -63,6 +68,18 @@ _generate_certificates:
 	charts/domain-proxy/certificates/protocol_controller/domain_proxy_server.key
 	ln -s -f ../../../../tools/deployment/certificates/certs/ca.cert \
 	charts/domain-proxy/certificates/protocol_controller/ca.cert
+
+.PHONY: _generate_ci_certificates
+_generate_ci_certificates: _generate_certificates
+	cp -R $(CURDIR)/tools/deployment/certificates/certs/* $(CERTS)
+	sudo chown -R 65534:65534 $(CERTS)
+
+.PHONY: _generate_harness_config
+_generate_harness_config:
+	@set -e; \
+	kubectl delete configmap harness-config --ignore-not-found; \
+	kubectl create configmap harness-config \
+	--from-file=tools/deployment/vendor/sas.cfg;
 
 .PHONY: _ci_test
 _ci_test: _install_skaffold_ci _contour_install
@@ -95,3 +112,17 @@ _postgres_db_delete:
 _ci_chart_smoke_tests: _install_skaffold_ci _contour_install
 	skaffold run
 	helm test --timeout 10m domain-proxy
+
+.PHONY: _ci_e2e_tests
+_ci_e2e_tests: _install_skaffold_ci _contour_install _generate_ci_certificates
+	sudo --preserve-env=MINIKUBE_HOME,KUBECONFIG minikube tunnel > /dev/null &
+	skaffold run
+	@set -e;\
+	docker run \
+	--add-host=domain-proxy:$$(kubectl get svc contour-envoy \
+	--output jsonpath='{.status.loadBalancer.ingress[0].ip}') \
+	--network minikube \
+	--rm \
+	-v $(CERTS):/opt/server/certs:Z \
+	-v $(CURDIR)/tools/deployment/vendor/sas.cfg:/opt/server/sas.cfg \
+	domainproxyfw1/harness:0.0.1 test_main.py

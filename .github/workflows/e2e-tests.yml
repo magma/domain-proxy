@@ -1,0 +1,46 @@
+name: E2E tests
+
+on: 
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  End_to_end_tests:
+    name: "Domain proxy end to end tests."
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Minikube
+      uses: manusa/actions-setup-minikube@v2.3.1
+      with:
+        minikube version: 'v1.18.1'
+        kubernetes version: 'v1.20.2'
+        github token: ${{ secrets.GITHUB_TOKEN }}
+        start args: "--memory=6954m"
+        driver: "docker"
+
+    - name: Setup Minikube
+      run: |
+        make _ci_init
+
+    - name: Get minikube IP and prepare directory for test results
+      run: |
+        minikube ip
+        #mkdir -p /tmp/test-results
+        #minikube mount /tmp/test-results:/tmp/test-results &
+
+    - name: Run e2e tests
+      timeout-minutes: 5
+      env:
+        KUBECONFIG: "/home/runner/.kube/config"
+      run: | 
+        #make _ci_e2e_tests
+        echo "run tests"
+
+    #- name: Upload integration test results
+    #  if: always()
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: test-results
+    #    path: /tmp/test-results/

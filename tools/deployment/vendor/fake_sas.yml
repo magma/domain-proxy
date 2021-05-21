@@ -16,11 +16,15 @@ spec:
     spec:
       containers:
       - name: fake-sas
+        #image: domainproxyfw1/harness:0.0.1
         image: melvin10001/fakesas:0.1.0
         volumeMounts:
         - name: certificates
           mountPath: /opt/server/certs
           readOnly: true
+        - name: sas-config
+          mountPath: /opt/server/sas.cfg
+          subPath: sas.cfg
         readinessProbe:
           tcpSocket:
             port: 9000
@@ -33,6 +37,9 @@ spec:
       - name: certificates
         secret:
           secretName: certificates
+      - name: sas-config
+        configMap:
+          name: harness-config
 
 ---
 
