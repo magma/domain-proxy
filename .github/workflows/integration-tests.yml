@@ -40,3 +40,8 @@ jobs:
       with:
         name: test-results
         path: /tmp/test-results/
+
+    - name: Publish integration test results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      with:
+        files: /tmp/test-results/**/*.xml
