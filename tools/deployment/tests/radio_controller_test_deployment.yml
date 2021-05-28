@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: sas-protocol-controller-tests-job
+  name: radio-controller-tests-job
 spec:
   template:
     metadata:
@@ -10,15 +10,14 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: protocol-controller-tests
-        image: protocol-controller-tests
-        command: ["python"]
-        args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/protocol_controller/test-results/test_report.xml"]
+      - name: radio-controller-tests
+        image: radio-controller-tests
+        args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/radio_controller/test-results/test_report.xml"]
         volumeMounts:
         - name: test-results
-          mountPath: /backend/protocol_controller/test-results
+          mountPath: /backend/radio_controller/test-results
         - name: certificates
-          mountPath: /backend/protocol_controller/certs
+          mountPath: /backend/radio_controller/certs
           readOnly: true
       volumes:
       - name: certificates
@@ -26,6 +25,6 @@ spec:
           secretName: certificates
       - name: test-results
         hostPath:
-          path: /tmp/test-results
+          path: /tmp/test-results-radio-controller
           type: DirectoryOrCreate
   backoffLimit: 3

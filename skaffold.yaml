@@ -67,10 +67,9 @@ profiles:
         path: /deploy/kubectl
         value:
           manifests:
-           - "./tools/deployment/tests/sas_protocol_controller_*.yml"
+           - "./tools/deployment/tests/protocol_controller_*.yml"
     activation:
       - env: SERVICE=PC
-
   - name: configuration-controller-integration-tests
     patches:
       - op: add
@@ -93,3 +92,26 @@ profiles:
           - "./tools/deployment/tests/configuration_controller_*.yml"
     activation:
       - env: SERVICE=CC
+  - name: radio-controller-integration-tests
+    patches:
+      - op: add
+        path: /build/artifacts/-
+        value:
+          image: radio-controller-tests
+          context: .
+          docker:
+            dockerfile: radio_controller/Dockerfile
+            buildArgs:
+              ENV: 'tests'
+      - op: add
+        path: /deploy/helm/releases/0/setValues
+        value:
+          radio_controller:
+            enabled: false
+      - op: add
+        path: /deploy/kubectl
+        value:
+          manifests:
+          - "./tools/deployment/tests/radio_controller_*.yml"
+    activation:
+      - env: SERVICE=RC
