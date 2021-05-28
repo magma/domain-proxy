@@ -19,7 +19,7 @@ class RequestRouterTestCase(TestCase):
             rc_ingest_url=self.rc_ingest_url,
             cert_path='fake/cert/path',
             ssl_key_path='fake/key/path',
-            request_mapping_file_path=self._get_from_fixture("fake_mappings/request_mapping.yml"),
+            request_mapping_file_path=self._get_from_fixture("fake_mappings/request_mapping.py"),
             ssl_verify=False
         )
 

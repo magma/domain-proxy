@@ -26,6 +26,7 @@ from configuration_controller.response_processor.strategies.strategies_mapping i
 from db.db import DB
 from db.models import Base
 from db.types import RequestTypes
+from mappings.request_mapping import request_mapping
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("configuration_controller.run")
@@ -53,7 +54,7 @@ def run():
         rc_ingest_url=config.RC_INGEST_URL,
         cert_path=config.CC_CERT_PATH,
         ssl_key_path=config.CC_SSL_KEY_PATH,
-        request_mapping_file_path=config.REQUEST_MAPPING_FILE_PATH,
+        request_mapping=request_mapping,
         ssl_verify=config.SAS_CERT_PATH
     )
     for request_type in RequestTypes:
