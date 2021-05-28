@@ -18,6 +18,8 @@ jobs:
   radio_controller_unit_tests:
     name: "Radion controller unit tests"
     runs-on: ubuntu-latest
+    env:
+      COVERAGE_RCFILE: ${{ github.workspace }}/.coveragerc
 
     defaults:
       run:
@@ -56,4 +58,13 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest tests/unit
+        coverage run --source=. -m pytest tests/unit
+        coverage report
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        flags: unittests,radio-controller
+        name: codecov-radio-controller
+        fail_ci_if_error: true
+        verbose: true

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: configuration-controller-tests-job
+  name: protocol-controller-tests-job
 spec:
   template:
     metadata:
@@ -10,14 +10,15 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: configuration-controller-tests
-        image: configuration-controller-tests
-        args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/configuration_controller/test-results/test_report.xml"]
+      - name: protocol-controller-tests
+        image: protocol-controller-tests
+        command: ["python"]
+        args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/protocol_controller/test-results/test_report.xml"]
         volumeMounts:
         - name: test-results
-          mountPath: /backend/configuration_controller/test-results
+          mountPath: /backend/protocol_controller/test-results
         - name: certificates
-          mountPath: /backend/configuration_controller/certs
+          mountPath: /backend/protocol_controller/certs
           readOnly: true
       volumes:
       - name: certificates
@@ -25,6 +26,6 @@ spec:
           secretName: certificates
       - name: test-results
         hostPath:
-          path: /tmp/test-results-configuration-controller
+          path: /tmp/test-results-protocol-controller
           type: DirectoryOrCreate
   backoffLimit: 3

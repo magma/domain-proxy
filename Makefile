@@ -93,6 +93,32 @@ _ci_test: _install_skaffold_ci _contour_install
 	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
 	if [[ $$SUCCESS != '1' ]]; then exit 1; fi
 
+define _ci_integration_tests
+kubectl delete --ignore-not-found=true job $(1)-tests-job
+skaffold run -p $(1)-integration-tests
+kubectl wait --for=condition=complete --timeout=10m job/$(1)-tests-job & \
+kubectl wait --for=condition=failed --timeout=10m job/$(1)-tests-job & \
+wait -n 1 2
+kubectl logs -l type=integration-tests
+@set -e;\
+SUCCESS=$$(kubectl get jobs $(1)-tests-job -o jsonpath='{.status.succeeded}');\
+if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
+if [[ $$SUCCESS != '1' ]]; then exit 1; fi
+endef
+
+.PHONY: _ci_test_configuration-controller
+_ci_test_configuration-controller: _install_skaffold_ci _contour_install
+	$(call _ci_integration_tests,configuration-controller)
+
+.PHONY: _ci_test_protocol-controller
+_ci_test_protocol-controller: _install_skaffold_ci _contour_install
+	$(call _ci_integration_tests,protocol-controller)
+
+.PHONY: _ci_test_radio-controller
+_ci_test_radio-controller: _install_skaffold_ci _contour_install
+	$(call _ci_integration_tests,radio-controller)
+
+
 .PHONY: _setup_db
 _setup_db: _postgres_db_setup
 

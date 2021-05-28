@@ -1,0 +1,18 @@
+# Setting coverage targets per flag
+coverage:
+  status:
+    project:
+      default:
+        target: 0% #overall project/ repo coverage
+      configuration_controller:
+        target: 0%
+       flags:
+          - configuration-controller
+      protocol_controller:
+        target: 0%
+        flags:
+          - protocol-controller
+      radio_controller:
+        target: 0%
+        flags:
+          - radio-controller
