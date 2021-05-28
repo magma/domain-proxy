@@ -1,7 +1,6 @@
 from typing import Dict, List
 
 import requests
-import yaml
 from requests import Response
 
 from configuration_controller.request_router.exceptions import RequestRouterException
@@ -17,15 +16,14 @@ class RequestRouter:
                  rc_ingest_url: str,
                  cert_path: str,
                  ssl_key_path: str,
-                 request_mapping_file_path: str,
+                 request_mapping: Dict,
                  ssl_verify: str):
         self.sas_url = sas_url
         self.rc_ingest_url = rc_ingest_url
         self.cert_path = cert_path
         self.ssl_key_path = ssl_key_path
         self.ssl_verify = ssl_verify
-        with open(request_mapping_file_path) as f:
-            self.request_mapping = yaml.load(f, Loader=yaml.SafeLoader)
+        self.request_mapping = request_mapping
 
     def post_to_sas(self, request_dict: Dict[str, List[Dict]]) -> Response:
         """

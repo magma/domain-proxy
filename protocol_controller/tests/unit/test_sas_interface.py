@@ -52,8 +52,8 @@ class SASProtocolControllerTests(AppTestCase):
     ])
     def test_route_response_200_for_post_and_405_for_other_methods(self, route, method, expected_status):
         # Given
-        with patch(f'protocol_controller.views.{route}.upload_request') as mockupload:
-            mockupload.return_value.msg = '{"any": "response"}'
+        with patch(f'protocol_controller.grpc_communication.get_common_rc_response.upload_requests') as mockupload:
+            mockupload.return_value.msg = ['{"any": "response"}']
 
             # When
             req_method = getattr(self.client, method)
