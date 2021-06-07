@@ -30,7 +30,7 @@ deploy:
       - name: domain-proxy
         chartPath: ./charts/domain-proxy
         valuesFiles:
-          - ./charts/domain-proxy/values.yaml
+          - ./charts/domain-proxy/examples/minikube_values.yml
         namespace: default
         version: "0.1.0"
         #wait: true

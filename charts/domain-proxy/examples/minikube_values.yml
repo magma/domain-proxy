@@ -1,0 +1,234 @@
+nameOverride: ""
+fullnameOverride: ""
+
+sas_certificate_directory: ""
+sas_key_directory: ""
+
+configuration_controller:
+
+  nameOverride: ""
+  fullnameOverride: ""
+  enabled: true
+  name: configuration-controller
+
+  imageConfig:
+    pullPolicy: IfNotPresent
+
+  image: configuration-controller
+  #image:
+    #repository: configuration-controller
+    # Overrides the image tag whose default is the chart appVersion.
+#    tag: ""
+    
+
+  replicaCount: 1
+
+
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  service:
+    enable: true
+    type: ClusterIP
+    port: 8080
+
+  tlsConfig:
+    paths:
+      cert: ""
+      key: ""
+      ca: ""
+
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts: []
+    tls: []
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  readinessProbe: {}
+
+  livenessProbe: {}
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+protocol_controller:
+
+  nameOverride: ""
+  fullnameOverride: ""
+  enabled: true
+  name: protocol-controller
+
+  imageConfig:
+    pullPolicy: IfNotPresent
+
+  image: protocol-controller
+  #image:
+    #repository: configuration-controller
+    # Overrides the image tag whose default is the chart appVersion.
+#    tag: ""
+    
+  replicaCount: 1
+
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  service:
+    enable: true
+    type: ClusterIP
+    port: 8080
+
+  tlsConfig:
+    paths:
+      cert: ""
+      key: ""
+      ca: ""
+
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts: []
+    tls: []
+
+  httpproxy:
+    enabled: true
+    annotations: {}
+    virtualhost:
+      fqdn: domain-proxy
+      tls:
+        secretName: domain-proxy-pc
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  readinessProbe: {}
+
+  livenessProbe: {}
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+radio_controller:
+
+  nameOverride: ""
+  fullnameOverride: ""
+  enabled: true
+  name: radio-controller
+
+  imageConfig:
+    pullPolicy: IfNotPresent
+
+  image: radio-controller
+  #image:
+    #repository: configuration-controller
+    # Overrides the image tag whose default is the chart appVersion.
+#    tag: ""
+    
+
+  replicaCount: 1
+
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  service:
+    enable: true
+    type: ClusterIP
+    port: 50053
+
+  tlsConfig:
+    paths:
+      cert: ""
+      key: ""
+      ca: ""
+
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts: []
+    tls: []
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  readinessProbe: {}
+
+  livenessProbe: {}
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
