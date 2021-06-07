@@ -34,6 +34,11 @@ spec:
             {{- toYaml .Values.radio_controller.securityContext | nindent 12 }}
           image: "{{ .Values.radio_controller.image }}"
           imagePullPolicy: {{ .Values.radio_controller.imageConfig.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.radio_controller.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
           {{- if .Values.radio_controller.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.radio_controller.livenessProbe | nindent 12 }}
