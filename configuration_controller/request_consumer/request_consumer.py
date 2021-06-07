@@ -5,5 +5,5 @@ from configuration_controller.custom_types.custom_types import RequestsMap
 
 class RequestConsumer(ABC):
     @abstractmethod
-    def get_requests(self) -> RequestsMap:
+    def get_pending_requests(self) -> RequestsMap:
         pass

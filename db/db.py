@@ -4,9 +4,10 @@ from sqlalchemy.orm import sessionmaker, Session as sqlalchemy_session
 from typing import List
 
 from db.models import Base, DBRequest, DBRequestState, DBRequestType
-from db.types import request_states, request_types
+from db.types import RequestStates, RequestTypes
 
 Session = sqlalchemy_session
+
 
 class DB:
     """
@@ -21,7 +22,6 @@ class DB:
         self.engine = create_engine(
             uri, encoding=encoding, echo=echo, future=future)
         self.session_factory = sessionmaker(bind=self.engine)
-        Base.metadata.create_all(self.engine)
 
     @contextmanager
     def session_scope(self) -> Session:
@@ -36,13 +36,13 @@ class DB:
 
     def initialize(self) -> None:
         with self.session_scope() as s:
-            for type in request_types:
-                if not s.query(DBRequestType).filter(DBRequestType.name == type).first():
-                    request_type = DBRequestType(name=type)
+            for _type in RequestTypes:
+                if not s.query(DBRequestType).filter(DBRequestType.name == _type.value).first():
+                    request_type = DBRequestType(name=_type.value)
                     s.add(request_type)
-            for state in request_states:
-                if not s.query(DBRequestState).filter(DBRequestState.name == state).first():
-                    request_state = DBRequestState(name=state)
+            for state in RequestStates:
+                if not s.query(DBRequestState).filter(DBRequestState.name == state.value).first():
+                    request_state = DBRequestState(name=state.value)
                     s.add(request_state)
             s.commit()
 
@@ -55,4 +55,3 @@ class DB:
                 )
             )
             return r.all()
-        return []

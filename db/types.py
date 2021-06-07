@@ -1,13 +1,15 @@
-request_types = [
-    "registrationRequest",
-    "spectrumInquiryRequest",
-    "grantRequest",
-    "heartbeatRequest",
-    "relinquishmentRequest",
-    "deregistrationRequest",
-]
+import enum
 
-request_states = [
-    "pending",
-    "processed"
-]
+
+class RequestTypes(enum.Enum):
+    REGISTRATION = "registrationRequest"
+    SPECTRUM_INQUIRY = "spectrumInquiryRequest"
+    GRANT = "grantRequest"
+    HEARTBEAT = "heartbeatRequest"
+    RELINQUISHMENT = "relinquishmentRequest"
+    DEREGISTRATION = "deregistrationRequest"
+
+
+class RequestStates(enum.Enum):
+    PENDING = "pending"
+    PROCESSED = "processed"

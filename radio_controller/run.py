@@ -7,6 +7,7 @@ from concurrent import futures
 from signal import signal, SIGTERM
 
 from db.db import DB
+from db.models import Base
 from radio_controller.config import Config
 from radio_controller.service import RadioControllerService
 from requests_pb2_grpc import add_RadioControllerServicer_to_server
@@ -26,6 +27,7 @@ def run():
         echo=config.SQLALCHEMY_ECHO,
         future=config.SQLALCHEMY_FUTURE
     )
+    Base.metadata.create_all(db.engine)  # TODO replace with migrations
     db.initialize()
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     add_RadioControllerServicer_to_server(

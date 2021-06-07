@@ -14,7 +14,9 @@ build:
       docker:
         dockerfile: protocol_controller/Dockerfile
     - image: configuration-controller
-      context: configuration_controller
+      context: .
+      docker:
+        dockerfile: configuration_controller/Dockerfile
     - image: radio-controller
       context: .
       docker:
@@ -78,6 +80,7 @@ profiles:
           image: configuration-controller-tests
           context: configuration_controller
           docker:
+            dockerfile: configuration_controller/Dockerfile
             buildArgs:
               ENV: 'tests'
       - op: add

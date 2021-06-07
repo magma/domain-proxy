@@ -1,11 +1,6 @@
-from typing import Dict, List, NamedTuple
+from typing import Dict, List
 
-
-class Request(NamedTuple):
-    id: int
-    cbsd_id: str
-    payload: Dict
-
+from db.models import DBRequest
 
 MergedRequests = Dict[str, List[Dict]]
-RequestsMap = Dict[str, List[Request]]
+RequestsMap = Dict[str, List[DBRequest]]

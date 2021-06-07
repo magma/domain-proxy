@@ -1,10 +1,10 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from configuration_controller.custom_types.custom_types import MergedRequests, Request
+from configuration_controller.custom_types.custom_types import MergedRequests, DBRequest
 
 
-def merge_requests(request_map: Dict[str, List[Request]]) -> MergedRequests:
+def merge_requests(request_map: Dict[str, List[DBRequest]]) -> MergedRequests:
     """
     This function receives an map of Request objects and merges them
     into one JSON object with request names as keys
