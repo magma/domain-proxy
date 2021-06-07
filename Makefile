@@ -12,7 +12,7 @@ init: start_minikube _ci_init _contour_install
 
 .PHONY: start_minikube
 start_minikube:
-	minikube start
+	minikube start --addons=metrics-server
 
 .PHONY: clean
 clean:
