@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session as sqlalchemy_session
 
-from db.models import Base, DBRequestState, DBRequestType
+from db.models import DBRequestState, DBRequestType
 from db.types import RequestStates, RequestTypes
 
 Session = sqlalchemy_session

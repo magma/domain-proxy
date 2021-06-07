@@ -1,14 +1,15 @@
-from configuration_controller.custom_types.custom_types import Request
 import logging
-
 from abc import ABC, abstractmethod
 from typing import List
 
+from requests import Response
+
+from db.models import DBRequest
 
 logger = logging.getLogger(__name__)
 
 
 class ResponseProcessor(ABC):
     @abstractmethod
-    def process_response(self, requests: List[Request], response: str) -> None:
+    def process_response(self, requests: List[DBRequest], response: Response) -> None:
         pass
