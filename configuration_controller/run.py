@@ -17,6 +17,7 @@ from configuration_controller.request_formatting.merger import merge_requests
 from configuration_controller.request_router.exceptions import RequestRouterException
 from configuration_controller.request_router.request_router import RequestRouter
 from configuration_controller.response_processor.response_db_processor import ResponseDBProcessor
+from configuration_controller.response_processor.response_processor import ResponseProcessor
 from configuration_controller.response_processor.strategies.strategies_mapping import processor_strategies
 from db.db import DB
 from db.models import Base

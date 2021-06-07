@@ -33,7 +33,7 @@ deploy:
           - ./charts/domain-proxy/values.yaml
         namespace: default
         version: "0.1.0"
-        # wait: true
+        #wait: true
         artifactOverrides:
           configuration_controller:
             image: configuration-controller
@@ -46,18 +46,15 @@ deploy:
             tlsConfig:
               paths:
                 cert: "certificates/protocol_controller/domain_proxy_bundle.cert"
-                key: "certificates/protocol_controller/domain_proxy_server.key"
-                ca: "certificates/protocol_controller/ca.cert"
+                key:  "certificates/protocol_controller/domain_proxy_server.key"
+                ca:  "certificates/protocol_controller/ca.cert"
 profiles:
   - name: protocol-controller-integration-tests
-    build:
-      tagPolicy:
-        sha256: {}
-      local:
-        push: false
-        concurrency: 0
-      artifacts:
-        - image: protocol-controller-tests
+    patches:
+      - op: add
+        path: /build/artifacts/-
+        value:
+          image: protocol-controller-tests
           context: .
           docker:
             dockerfile: protocol_controller/Dockerfile
@@ -82,50 +79,48 @@ profiles:
     activation:
       - env: SERVICE=PC
   - name: configuration-controller-integration-tests
-    build:
-      tagPolicy:
-        sha256: {}
-      local:
-        push: false
-        concurrency: 0
-      artifacts:
-        - image: configuration-controller-tests
+    patches:
+      - op: add
+        path: /build/artifacts/-
+        value:
+          image: configuration-controller-tests
           context: .
           docker:
             dockerfile: configuration_controller/Dockerfile
             buildArgs:
               ENV: 'tests'
-        - image: protocol-controller
-          context: .
-          docker:
-            dockerfile: protocol_controller/Dockerfile
-        - image: radio-controller
+      - op: add
+        path: /deploy/helm/releases/0/setValues
+        value:
+          configuration_controller:
+            enabled: false
+      - op: add
+        path: /deploy/kubectl
+        value:
+          manifests:
+          - "./tools/deployment/tests/configuration_controller_*.yml"
+    activation:
+      - env: SERVICE=CC
+  - name: radio-controller-integration-tests
+    patches:
+      - op: add
+        path: /build/artifacts/-
+        value:
+          image: radio-controller-tests
           context: .
           docker:
             dockerfile: radio_controller/Dockerfile
-    deploy:
-      helm:
-        flags:
-          install:
-            - "--debug"
-        releases:
-          - name: domain-proxy
-            chartPath: ./charts/domain-proxy
-            valuesFiles:
-              - ./charts/domain-proxy/values.yaml
-            namespace: default
-            version: "0.1.0"
-            wait: true
-            artifactOverrides:
-              protocol_controller:
-                image: protocol-controller
-              radio_controller:
-                image: radio-controller
-            setValues:
-              configuration_controller:
-                enabled: false
-      kubectl:
-        manifests:
-          - ./tools/deployment/tests/configuration_controller_*.yml
+            buildArgs:
+              ENV: 'tests'
+      - op: add
+        path: /deploy/helm/releases/0/setValues
+        value:
+          radio_controller:
+            enabled: false
+      - op: add
+        path: /deploy/kubectl
+        value:
+          manifests:
+          - "./tools/deployment/tests/radio_controller_*.yml"
     activation:
-      - env: SERVICE=CC
+      - env: SERVICE=RC
