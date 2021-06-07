@@ -65,6 +65,12 @@ profiles:
         value:
           protocol_controller:
             enabled: false
+          radio_controller:
+            extraEnv:
+              SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://postgres:password@db:5432/dp_test"
+          configuration_controller:
+            extraEnv:
+              SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://postgres:password@db:5432/dp_test"
       - op: add
         path: /deploy/kubectl
         value:

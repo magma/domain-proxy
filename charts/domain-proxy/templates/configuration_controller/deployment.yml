@@ -32,6 +32,11 @@ spec:
         - name: {{ .Values.configuration_controller.name }}
           image: "{{ .Values.configuration_controller.image }}"
           imagePullPolicy: {{ .Values.configuration_controller.imageConfig.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.configuration_controller.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
           {{- if .Values.configuration_controller.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.configuration_controller.livenessProbe | nindent 12 }}
