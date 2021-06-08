@@ -74,6 +74,9 @@ profiles:
       - op: add
         path: /deploy/kubectl
         value:
+          flags:
+            apply:
+              - "--force=true"
           manifests:
            - "./tools/deployment/tests/protocol_controller_*.yml"
     activation:
@@ -97,6 +100,9 @@ profiles:
       - op: add
         path: /deploy/kubectl
         value:
+          flags:
+            apply:
+            - "--force=true"
           manifests:
           - "./tools/deployment/tests/configuration_controller_*.yml"
     activation:
