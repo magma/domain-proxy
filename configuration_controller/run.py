@@ -12,21 +12,15 @@ from sqlalchemy import create_engine
 
 from configuration_controller.config import Config
 from configuration_controller.mappings.request_response_mapping import request_response
-from configuration_controller.request_consumer.request_db_consumer import (
-    RequestDBConsumer,
-)
+from configuration_controller.request_consumer.request_db_consumer import RequestDBConsumer
 from configuration_controller.request_formatting.merger import merge_requests
 from configuration_controller.request_router.exceptions import RequestRouterException
 from configuration_controller.request_router.request_router import RequestRouter
-from configuration_controller.response_processor.response_db_processor import (
-    ResponseDBProcessor,
-)
-from configuration_controller.response_processor.strategies.strategies_mapping import (
-    processor_strategies,
-)
+from configuration_controller.response_processor.response_db_processor import ResponseDBProcessor
+from configuration_controller.response_processor.strategies.strategies_mapping import processor_strategies
 from db_service.session_manager import SessionManager
-from mappings.types import RequestTypes
 from mappings.request_mapping import request_mapping
+from mappings.types import RequestTypes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("configuration_controller.run")
@@ -64,6 +58,7 @@ def run():
             response_type=response_type,
             request_map_key_func=processor_strategies[req_type]["request_map_key"],
             response_map_key_func=processor_strategies[req_type]["response_map_key"],
+            process_responses_func=processor_strategies[req_type]["process_responses"],
         )
         scheduler.add_job(
             process_requests,

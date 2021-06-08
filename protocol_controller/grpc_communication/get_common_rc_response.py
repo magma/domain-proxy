@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from time import sleep
 from typing import Dict, Optional
 
-from flask import current_app, Request
+from flask import Request, current_app
 from grpc import RpcError
 from werkzeug.exceptions import BadRequest
 

@@ -1,5 +1,5 @@
 from db_service.db_initialize import DBInitializer
-from db_service.models import DBRequestType, DBRequestState
+from db_service.models import DBRequestState, DBRequestType
 from db_service.session_manager import SessionManager
 from db_service.tests.db_testcase import DBTestCase
 
@@ -40,5 +40,3 @@ class DBInitializationTestCase(DBTestCase):
         # Then
         self.assertListEqual(types_post_init_1, types_post_init_2)
         self.assertListEqual(states_post_init_1, states_post_init_2)
-
-

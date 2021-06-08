@@ -151,4 +151,4 @@ migration:
 	alembic -c ./alembic.ini upgrade head; \
 	alembic -c ./alembic.ini revision --autogenerate
 	docker rm -f db
-	
+

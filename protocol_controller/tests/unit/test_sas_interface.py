@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from parameterized import parameterized
+
 from protocol_controller.tests.app_testcase import AppTestCase
 
 REGISTRATION = 'registration'

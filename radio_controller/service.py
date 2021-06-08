@@ -2,12 +2,11 @@ import json
 import logging
 from typing import Dict, List, Optional
 
+from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
 from db_service.session_manager import SessionManager
+from mappings.types import RequestStates
 from requests_pb2 import RequestDbId, RequestDbIds, RequestPayload, ResponsePayload
 from requests_pb2_grpc import RadioControllerServicer
-
-from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
-from mappings.types import RequestStates
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +46,7 @@ class RadioControllerService(RadioControllerServicer):
         with self.session_manager.session_scope() as session:
             request_pending_state = session.query(DBRequestState).filter(
                 DBRequestState.name == RequestStates.PENDING.value).scalar()
-            req_type = session.query(DBRequestType).filter(
-                DBRequestType.name == request_type).scalar()
+            req_type = session.query(DBRequestType).filter(DBRequestType.name == request_type).scalar()
             for request_json in request_map[request_type]:
                 db_request = self._create_db_request(
                     request_type=req_type,

@@ -3,15 +3,14 @@ import logging
 import os
 from concurrent import futures
 from signal import SIGTERM, signal
-from sqlalchemy import create_engine
 
 import grpc
+from sqlalchemy import create_engine
 
 from db_service.session_manager import SessionManager
-from requests_pb2_grpc import add_RadioControllerServicer_to_server
-
 from radio_controller.config import Config
 from radio_controller.service import RadioControllerService
+from requests_pb2_grpc import add_RadioControllerServicer_to_server
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("radio_controller.run")
