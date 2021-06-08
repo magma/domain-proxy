@@ -1,7 +1,5 @@
 import logging
 
-from sqlalchemy import and_
-
 from configuration_controller.custom_types.custom_types import RequestsMap
 from db_service.models import DBRequest, DBRequestState, DBRequestType
 from mappings.types import RequestStates
@@ -17,10 +15,8 @@ class RequestDBConsumer:
 
     def get_pending_requests(self, session) -> RequestsMap:
         db_requests = session.query(DBRequest).join(DBRequestType, DBRequestState).filter(
-            and_(
-                DBRequestType.name == self.request_type,
-                DBRequestState.name == RequestStates.PENDING.value
-            )
+            DBRequestType.name == self.request_type,
+            DBRequestState.name == RequestStates.PENDING.value
         ).all()
 
         if db_requests:

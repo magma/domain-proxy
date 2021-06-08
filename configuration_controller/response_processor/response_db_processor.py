@@ -3,8 +3,8 @@ from typing import Callable, Dict, List
 
 from requests import Response
 
-from db_service.session_manager import Session
 from db_service.models import DBRequest, DBRequestState, DBResponse
+from db_service.session_manager import Session
 from mappings.types import RequestStates
 
 logger = logging.getLogger(__name__)
@@ -14,10 +14,12 @@ class ResponseDBProcessor:
     def __init__(self,
                  response_type: str,
                  request_map_key_func: Callable,
-                 response_map_key_func: Callable):
+                 response_map_key_func: Callable,
+                 process_responses_func: Callable):
         self.response_type = response_type
         self.request_map_key_func = request_map_key_func
         self.response_map_key_func = response_map_key_func
+        self.process_responses_func = process_responses_func
 
     def process_response(self, requests: List[DBRequest], response: Response, session: Session) -> None:
         if not response.json():
@@ -25,14 +27,16 @@ class ResponseDBProcessor:
             return
 
         logger.debug(f"[{self.response_type}] Processing requests: {requests} using response {response.json()}")
-        self._add_responses(requests, response, session)
+        responses = self._add_responses(requests, response, session)
         self._mark_requests_as_processed(requests, session)
+        self._process_responses(responses, session)
 
-    def _add_responses(self, requests: List[DBRequest], response: Response, session: Session) -> None:
+    def _add_responses(self, requests: List[DBRequest], response: Response, session: Session) -> List[DBResponse]:
         requests_map = {self.request_map_key_func(req.payload): req for req in requests}
         response_json_list = response.json().get(self.response_type, [])
         logger.debug(f"[{self.response_type}] requests json list: {response_json_list}")
 
+        responses = []
         for response_json in response.json().get(self.response_type, []):
             map_key = self.response_map_key_func(response_json)
             if not map_key or map_key not in requests_map:
@@ -44,9 +48,11 @@ class ResponseDBProcessor:
                 request_id=requests_map[map_key].id)
             logger.info(f"[{self.response_type}] Adding Response: {db_response} for Request {requests_map[map_key]}")
             session.add(db_response)
+            responses.append(db_response)
+        return responses
 
-    def _generate_response_map_key(self, response_json: Dict) -> str:
-        return self.response_map_key_func(response_json)
+    def _process_responses(self, responses: List[DBResponse], session: Session) -> None:
+        self.process_responses_func(responses, session)
 
     def _mark_requests_as_processed(self, requests: List[DBRequest], session: Session) -> None:
         logger.debug(f"[{self.response_type}] Marking requests: {requests} as processed.")

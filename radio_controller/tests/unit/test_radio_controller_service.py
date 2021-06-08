@@ -6,6 +6,7 @@ from parameterized import parameterized
 from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
 from db_service.session_manager import SessionManager
 from db_service.tests.db_testcase import DBTestCase
+from mappings.types import RequestStates, RequestTypes
 from radio_controller.service import RadioControllerService
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
@@ -61,8 +62,8 @@ class RadioControllerTestCase(DBTestCase):
         self.assertEqual(grpc_expected_response_payload, grpc_response_payload)
 
     @parameterized.expand([
-        ({"registrationRequest": [{"cbsdId": "foo1"}, {"cbsdId": "foo2"}]}, [1, 2], [1, 2]),
-        ({"registrationRequest": [{"cbsdId": "foo1"}, {"someId": "foo2"}]}, [1, ], [1, ]),
+        ({RequestTypes.REGISTRATION.value: [{"cbsdId": "foo1"}, {"cbsdId": "foo2"}]}, [1, 2], [1, 2]),
+        ({RequestTypes.REGISTRATION.value: [{"cbsdId": "foo1"}, {"someId": "foo2"}]}, [1, ], [1, ]),
         ({}, [], []),
         (None, [], []),
     ])
@@ -71,6 +72,12 @@ class RadioControllerTestCase(DBTestCase):
     ):
         # Given
         request_map = request_map
+        if request_map:
+            for type in request_map.keys():
+                self.session.add(DBRequestType(name=type))
+        request_pending_state = DBRequestState(name=RequestStates.PENDING.value)
+        self.session.add(request_pending_state)
+        self.session.commit()
 
         # When
         response_ids = self.rc_service._store_requests_from_map(request_map)

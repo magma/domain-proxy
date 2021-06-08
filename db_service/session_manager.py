@@ -1,6 +1,8 @@
 from contextlib import contextmanager
+
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session as sqlalchemy_session
+from sqlalchemy.orm import Session as sqlalchemy_session
+from sqlalchemy.orm import sessionmaker
 
 Session = sqlalchemy_session
 

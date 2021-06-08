@@ -1,6 +1,4 @@
-from configuration_controller.request_consumer.request_db_consumer import (
-    RequestDBConsumer,
-)
+from configuration_controller.request_consumer.request_db_consumer import RequestDBConsumer
 from db_service.models import DBRequest, DBRequestState, DBRequestType
 from db_service.tests.db_testcase import DBTestCase
 

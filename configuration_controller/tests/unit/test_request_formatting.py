@@ -2,9 +2,7 @@ import json
 from unittest import TestCase
 
 from configuration_controller.request_formatting.merger import merge_requests
-from configuration_controller.tests.fixtures.fake_requests.registration_requests import (
-    registration_requests,
-)
+from configuration_controller.tests.fixtures.fake_requests.registration_requests import registration_requests
 from db_service.models import DBRequest, DBRequestState, DBRequestType
 
 
