@@ -33,7 +33,7 @@ deploy:
           - ./charts/domain-proxy/values.yaml
         namespace: default
         version: "0.1.0"
-        # wait: true
+        #wait: true
         artifactOverrides:
           configuration_controller:
             image: configuration-controller

@@ -61,7 +61,7 @@ class RadioControllerTestCase(DBTestCase):
 
     @parameterized.expand([
         ({"registrationRequest": [{"cbsdId": "foo1"}, {"cbsdId": "foo2"}]}, [1, 2], [1, 2]),
-        ({"registrationRequest": [{"cbsdId": "foo1"}, {"someId": "foo2"}]}, [1, ], [1, 0]),
+        ({"registrationRequest": [{"cbsdId": "foo1"}, {"someId": "foo2"}]}, [1, ], [1, ]),
         ({}, [], []),
         (None, [], []),
     ])

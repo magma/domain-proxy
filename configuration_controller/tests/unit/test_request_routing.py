@@ -5,6 +5,7 @@ import requests_mock
 
 from configuration_controller.request_router.exceptions import RequestRouterException
 from configuration_controller.request_router.request_router import RequestRouter
+from mappings.request_mapping import request_mapping
 
 
 @requests_mock.Mocker()
@@ -19,27 +20,27 @@ class RequestRouterTestCase(TestCase):
             rc_ingest_url=self.rc_ingest_url,
             cert_path='fake/cert/path',
             ssl_key_path='fake/key/path',
-            request_mapping_file_path=self._get_from_fixture("fake_mappings/request_mapping.py"),
+            request_mapping=request_mapping,
             ssl_verify=False
         )
 
     def test_router_forwarding_existing_sas_methods(self, mocker):
         # Given
-        self._register_test_post_endpoints(mocker, f'{self.sas_url}/test_post')
+        self._register_test_post_endpoints(mocker, f'{self.sas_url}/registration')
 
         # When
-        resp = self.router.post_to_sas(request_dict={"testPostRequest": [{"foo": "bar"}]})
+        resp = self.router.post_to_sas(request_dict={"registrationRequest": [{"foo": "bar"}]})
 
         # Then
         self.assertEqual(200, resp.status_code)
 
     def test_sas_response_is_forwarded_to_rc(self, mocker):
         # Given
-        self._register_test_post_endpoints(mocker, f'{self.sas_url}/test_post')
+        self._register_test_post_endpoints(mocker, f'{self.sas_url}/registration')
         self._register_test_post_endpoints(mocker, self.rc_ingest_url)
 
         # When
-        sas_resp = self.router.post_to_sas(request_dict={"testPostRequest": [{"foo": "bar"}]})
+        sas_resp = self.router.post_to_sas(request_dict={"registrationRequest": [{"foo": "bar"}]})
         rc_resp = self.router.redirect_sas_response_to_radio_controller(sas_resp)
 
         # Then
