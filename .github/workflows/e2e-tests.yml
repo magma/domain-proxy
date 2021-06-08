@@ -11,13 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Prepare Minikube
+      run: |
+        sleep $[ ( $RANDOM % 60 )  + 1 ]s
+
     - name: Install Minikube
-      uses: manusa/actions-setup-minikube@v2.3.1
+      uses: manusa/actions-setup-minikube@v2.4.1
       with:
-        minikube version: 'v1.18.1'
+        minikube version: 'v1.20.0'
         kubernetes version: 'v1.20.2'
         github token: ${{ secrets.GITHUB_TOKEN }}
-        start args: "--memory=6954m"
+        start args: "--memory=6952m"
         driver: "docker"
 
     - name: Setup Minikube
