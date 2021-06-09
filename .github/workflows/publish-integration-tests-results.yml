@@ -17,8 +17,6 @@ jobs:
       matrix:
         service:
           - protocol-controller
-          - radio-controller
-          - configuration-controller
     steps:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
@@ -31,5 +29,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
-          files: test-results/**/*.xml
+          files: test-results-${{ matrix.service }}/**/*.xml
           comment_title: "Integration Test Results"

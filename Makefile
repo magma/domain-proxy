@@ -81,21 +81,9 @@ _generate_harness_config:
 	kubectl create configmap harness-config \
 	--from-file=tools/deployment/vendor/sas.cfg;
 
-.PHONY: _ci_test
-_ci_test: _install_skaffold_ci _contour_install
-	skaffold run -p configuration-controller-integration-tests
-	kubectl wait --for=condition=complete --timeout=10m job/configuration-controller-tests-job & \
-	kubectl wait --for=condition=failed --timeout=10m job/configuration-controller-tests-job & \
-	wait -n 1 2
-	kubectl logs -l type=integration-tests
-	@set -e;\
-	SUCCESS=$$(kubectl get jobs configuration-controller-tests-job -o jsonpath='{.status.succeeded}');\
-	if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
-	if [[ $$SUCCESS != '1' ]]; then exit 1; fi
-
 define _ci_integration_tests
 kubectl delete --ignore-not-found=true job $(1)-tests-job
-skaffold run -p $(1)-integration-tests
+skaffold run
 kubectl wait --for=condition=complete --timeout=10m job/$(1)-tests-job & \
 kubectl wait --for=condition=failed --timeout=10m job/$(1)-tests-job & \
 wait -n 1 2
