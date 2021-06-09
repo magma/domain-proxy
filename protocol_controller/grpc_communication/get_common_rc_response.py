@@ -27,15 +27,16 @@ def get_common_bulk_rc_response(request: Request, response_name: str):
 
 def collect_rc_responses(client: GrpcClient, req_db_ids) -> Dict[int, Dict]:
     timeout = current_app.config["RC_RESPONSE_WAIT_TIMEOUT"]
+    interval = current_app.config["RC_RESPONSE_WAIT_INTERVAL"]
     with ThreadPoolExecutor() as executor:
         responses_dict = dict(
-            zip(req_db_ids, executor.map(lambda _id: check_response_for_id(client, _id, timeout), req_db_ids))
+            zip(req_db_ids, executor.map(lambda _id: check_response_for_id(client, _id, timeout, interval), req_db_ids))
         )
 
     return responses_dict
 
 
-def check_response_for_id(client: GrpcClient, req_id: int, timeout: int) -> Optional[Dict]:
+def check_response_for_id(client: GrpcClient, req_id: int, timeout: int, interval: int) -> Optional[Dict]:
     req = RequestDbId(id=req_id)
     start = datetime.now()
     while datetime.now() < start + timedelta(seconds=timeout):
@@ -45,10 +46,12 @@ def check_response_for_id(client: GrpcClient, req_id: int, timeout: int) -> Opti
             logging.error(f"Unable to get response from Radio Controller for request {req_id}. Reason: {e}")
             return {}
 
-        if grpc_response.payload:
-            return grpc_response.payload
+        payload_json = json.loads(grpc_response.payload)
+        if payload_json:
+            logging.info(f"Checked response for request id={req_id}, returning payload: <{grpc_response.payload}>")
+            return payload_json
         else:
-            sleep(current_app.config["RC_RESPONSE_WAIT_INTERVAL"])
+            sleep(interval)
 
     logging.error(f"Timed out while waiting for SAS response for request: {req_id}")
     return {}
