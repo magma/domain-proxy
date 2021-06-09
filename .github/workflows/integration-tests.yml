@@ -6,8 +6,8 @@ on:
       - 'master'
 
 jobs:
-  configuration_controller_build_and_integation_tests:
-    name: "${{ matrix.service }} integration tests"
+  integation_tests:
+    name: "All"
     runs-on: ubuntu-latest
     continue-on-error: true
     env:
@@ -17,14 +17,8 @@ jobs:
       matrix:
         service:
           - protocol-controller
-          - radio-controller
-          - configuration-controller
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare Minikube
-      run: |
-        sleep $[ ( $RANDOM % 60 )  + 1 ]s
-
     - name: Install Minikube
       uses: manusa/actions-setup-minikube@v2.4.1
       with:

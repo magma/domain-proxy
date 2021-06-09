@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare Minikube
-      run: |
-        sleep $[ ( $RANDOM % 60 )  + 1 ]s
-
     - name: Install Minikube
       uses: manusa/actions-setup-minikube@v2.4.1
       with:
