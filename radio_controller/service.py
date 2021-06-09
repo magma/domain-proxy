@@ -25,7 +25,7 @@ class RadioControllerService(RadioControllerServicer):
         """Method to insert requests to the database"""
         logger.info("Storing requests in DB.")
         requests_map = json.loads(request_payload.payload)
-        db_request_ids = self._store_requests_from_map(requests_map) or []
+        db_request_ids = self._store_requests_from_map(requests_map)
         return RequestDbIds(ids=db_request_ids)
 
     def GetResponse(self, pb2_message: RequestDbId, context) -> ResponsePayload:
@@ -60,8 +60,6 @@ class RadioControllerService(RadioControllerServicer):
                     session.add(db_request)
                     session.flush()
                     request_db_ids.append(db_request.id)
-                else:
-                    request_db_ids.append(0)
             session.commit()
         return request_db_ids
 
