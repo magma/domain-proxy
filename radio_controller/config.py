@@ -1,5 +1,7 @@
 import os
 
+import db_service.config
+
 
 class Config:
     # General
@@ -9,11 +11,10 @@ class Config:
     GRPC_PORT = int(os.environ.get('GRPC_PORT', 50053))
 
     # SQLAlchemy DB URI (scheme + url)
-    SQLALCHEMY_DB_URI = os.environ.get(
-        'SQLALCHEMY_DB_URI', 'postgresql+psycopg2://postgres:postgres@db:5432/dp')
-    SQLALCHEMY_DB_ENCODING = os.environ.get('SQLALCHEMY_DB_ENCODING', 'utf8')
-    SQLALCHEMY_ECHO = False
-    SQLALCHEMY_FUTURE = False
+    SQLALCHEMY_DB_URI = db_service.config.Config().SQLALCHEMY_DB_URI
+    SQLALCHEMY_DB_ENCODING = db_service.config.Config().SQLALCHEMY_DB_ENCODING
+    SQLALCHEMY_ECHO = db_service.config.Config().SQLALCHEMY_ECHO
+    SQLALCHEMY_FUTURE = db_service.config.Config().SQLALCHEMY_FUTURE
 
 
 class DevelopmentConfig(Config):

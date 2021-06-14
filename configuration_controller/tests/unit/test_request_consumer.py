@@ -1,8 +1,8 @@
 from configuration_controller.request_consumer.request_db_consumer import (
     RequestDBConsumer,
 )
-from db.models import DBRequest, DBRequestState, DBRequestType
-from db.tests.db_testcase import DBTestCase
+from db_service.models import DBRequest, DBRequestState, DBRequestType
+from db_service.tests.db_testcase import DBTestCase
 
 
 class RegistrationDBConsumerTestCase(DBTestCase):

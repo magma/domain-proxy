@@ -8,6 +8,7 @@ import click
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from requests import Response
+from sqlalchemy import create_engine
 
 from configuration_controller.config import Config
 from configuration_controller.mappings.request_response_mapping import request_response
@@ -23,9 +24,8 @@ from configuration_controller.response_processor.response_db_processor import (
 from configuration_controller.response_processor.strategies.strategies_mapping import (
     processor_strategies,
 )
-from db.db import DB
-from db.models import Base
-from db.types import RequestTypes
+from db_service.session_manager import SessionManager
+from mappings.types import RequestTypes
 from mappings.request_mapping import request_mapping
 
 logging.basicConfig(level=logging.INFO)
@@ -41,14 +41,13 @@ def cli():
 def run():
     config = get_config()
     scheduler = BackgroundScheduler()
-    db = DB(
-        uri=config.SQLALCHEMY_DB_URI,
+    db_engine = create_engine(
+        url=config.SQLALCHEMY_DB_URI,
         encoding=config.SQLALCHEMY_DB_ENCODING,
         echo=config.SQLALCHEMY_ECHO,
         future=config.SQLALCHEMY_FUTURE
     )
-    Base.metadata.create_all(db.engine)  # TODO replace with migrations
-    db.initialize()
+    session_manager = SessionManager(db_engine=db_engine)
     router = RequestRouter(
         sas_url=config.SAS_URL,
         rc_ingest_url=config.RC_INGEST_URL,
@@ -68,7 +67,7 @@ def run():
         )
         scheduler.add_job(
             process_requests,
-            args=[consumer, processor, router, db],
+            args=[consumer, processor, router, session_manager],
             trigger=IntervalTrigger(
                 seconds=config.REQUEST_PROCESSING_INTERVAL),
             max_instances=1,
@@ -91,9 +90,9 @@ def process_requests(
         consumer: RequestDBConsumer,
         processor: ResponseDBProcessor,
         router: RequestRouter,
-        db: DB) -> Optional[Response]:
+        session_manager: SessionManager) -> Optional[Response]:
 
-    with db.session_scope() as session:
+    with session_manager.session_scope() as session:
         requests_map = consumer.get_pending_requests(session)
         requests_type = next(iter(requests_map))
         requests_list = requests_map[requests_type]

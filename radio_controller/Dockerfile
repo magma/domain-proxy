@@ -1,7 +1,8 @@
 ARG ENV=standard
 FROM python:3.9.2-slim-buster as standard-version
 
-COPY db /db
+COPY db_service/config.py db_service/models.py db_service/session_manager.py /db_service/
+COPY mappings /mappings
 COPY radio_controller /radio_controller
 COPY protobufs /protobufs
 

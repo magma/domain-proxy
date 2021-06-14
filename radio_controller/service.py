@@ -2,12 +2,12 @@ import json
 import logging
 from typing import Dict, List, Optional
 
+from db_service.session_manager import SessionManager
 from requests_pb2 import RequestDbId, RequestDbIds, RequestPayload, ResponsePayload
 from requests_pb2_grpc import RadioControllerServicer
 
-from db.db import DB
-from db.models import DBRequest, DBRequestState, DBRequestType, DBResponse
-from db.types import RequestStates
+from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
+from mappings.types import RequestStates
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +18,8 @@ CBSD_ID = "cbsdId"
 
 
 class RadioControllerService(RadioControllerServicer):
-    def __init__(self, db: DB):
-        self.db = db
+    def __init__(self, session_manager: SessionManager):
+        self.session_manager = session_manager
 
     def UploadRequests(self, request_payload: RequestPayload, context) -> RequestDbIds:
         """Method to insert requests to the database"""
@@ -44,7 +44,7 @@ class RadioControllerService(RadioControllerServicer):
         except (StopIteration, TypeError) as e:
             logger.error(f"Incorrect request map format: {request_map}. Details: {e}")
             return []
-        with self.db.session_scope() as session:
+        with self.session_manager.session_scope() as session:
             request_pending_state = session.query(DBRequestState).filter(
                 DBRequestState.name == RequestStates.PENDING.value).scalar()
             req_type = session.query(DBRequestType).filter(
@@ -85,7 +85,7 @@ class RadioControllerService(RadioControllerServicer):
             payload=request_payload)
 
     def _get_request_response(self, request_db_id: int) -> ResponsePayload:
-        with self.db.session_scope() as session:
+        with self.session_manager.session_scope() as session:
             logger.info(f"Trying to fetch DB response for request id: {request_db_id}")
             response = session.query(DBResponse).filter(DBResponse.request_id == request_db_id).first()
         if not response:

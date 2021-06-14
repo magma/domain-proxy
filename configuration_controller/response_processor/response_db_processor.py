@@ -3,9 +3,9 @@ from typing import Callable, Dict, List
 
 from requests import Response
 
-from db.db import Session
-from db.models import DBRequest, DBRequestState, DBResponse
-from db.types import RequestStates
+from db_service.session_manager import Session
+from db_service.models import DBRequest, DBRequestState, DBResponse
+from mappings.types import RequestStates
 
 logger = logging.getLogger(__name__)
 
