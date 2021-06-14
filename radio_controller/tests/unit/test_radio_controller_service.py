@@ -3,8 +3,8 @@ import json
 import testing.postgresql
 from parameterized import parameterized
 
-from db.models import DBRequest, DBRequestState, DBRequestType, DBResponse
-from db.tests.db_testcase import DBTestCase
+from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
+from db_service.tests.db_testcase import DBTestCase
 from radio_controller.service import RadioControllerService
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)

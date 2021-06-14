@@ -1,8 +1,11 @@
 import unittest
-import testing.postgresql
 
-from db.db import DB, Session
-from db.models import Base
+import testing.postgresql
+from sqlalchemy import create_engine
+
+from db_service.db_initialize import DBInitializer, Session
+from db_service.models import Base
+from db_service.session_manager import SessionManager
 from radio_controller.config import TestConfig
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
@@ -26,14 +29,14 @@ class DBTestCase(unittest.TestCase):
 
     def setUp(self):
         config = self.get_config()
-        self.db = DB(
-            uri=config.SQLALCHEMY_DB_URI,
+        self.engine = create_engine(
+            url=config.SQLALCHEMY_DB_URI,
             encoding=config.SQLALCHEMY_DB_ENCODING,
             echo=config.SQLALCHEMY_ECHO,
             future=config.SQLALCHEMY_FUTURE
         )
         self.session = Session()
-        Base.metadata.bind = self.db.engine
+        Base.metadata.bind = self.engine
         Base.metadata.create_all()
 
     def tearDown(self):

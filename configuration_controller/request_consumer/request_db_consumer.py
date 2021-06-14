@@ -3,8 +3,8 @@ import logging
 from sqlalchemy import and_
 
 from configuration_controller.custom_types.custom_types import RequestsMap
-from db.models import DBRequest, DBRequestState, DBRequestType
-from db.types import RequestStates
+from db_service.models import DBRequest, DBRequestState, DBRequestType
+from mappings.types import RequestStates
 
 logger = logging.getLogger(__name__)
 

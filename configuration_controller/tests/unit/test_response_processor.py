@@ -11,8 +11,8 @@ from configuration_controller.response_processor.strategies.map_keys_generation 
 from configuration_controller.tests.fixtures.fake_requests.registration_requests import (
     registration_requests,
 )
-from db.models import DBRequest, DBRequestState, DBRequestType, DBResponse
-from db.tests.db_testcase import DBTestCase
+from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
+from db_service.tests.db_testcase import DBTestCase
 
 
 class DefaultResponseDBProcessorTestCase(DBTestCase):

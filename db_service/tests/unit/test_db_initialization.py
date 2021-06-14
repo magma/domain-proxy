@@ -1,8 +1,14 @@
-from db.models import DBRequestType, DBRequestState
-from db.tests.db_testcase import DBTestCase
+from db_service.db_initialize import DBInitializer
+from db_service.models import DBRequestType, DBRequestState
+from db_service.session_manager import SessionManager
+from db_service.tests.db_testcase import DBTestCase
 
 
 class DBInitializationTestCase(DBTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.initializer = DBInitializer(SessionManager(db_engine=self.engine))
 
     def test_db_is_initialized_with_db_states_and_types(self):
         # Given
@@ -10,7 +16,7 @@ class DBInitializationTestCase(DBTestCase):
         states_pre_init = self.session.query(DBRequestState).all()
 
         # When
-        self.db.initialize()
+        self.initializer.initialize()
 
         types_post_init = self.session.query(DBRequestType).all()
         states_post_init = self.session.query(DBRequestState).all()
@@ -23,11 +29,11 @@ class DBInitializationTestCase(DBTestCase):
 
     def test_db_is_initialized_only_once(self):
         # Given / When
-        self.db.initialize()
+        self.initializer.initialize()
         types_post_init_1 = self.session.query(DBRequestType).all()
         states_post_init_1 = self.session.query(DBRequestState).all()
 
-        self.db.initialize()
+        self.initializer.initialize()
         types_post_init_2 = self.session.query(DBRequestType).all()
         states_post_init_2 = self.session.query(DBRequestState).all()
 

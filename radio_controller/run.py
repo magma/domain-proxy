@@ -3,12 +3,13 @@ import logging
 import os
 from concurrent import futures
 from signal import SIGTERM, signal
+from sqlalchemy import create_engine
 
 import grpc
+
+from db_service.session_manager import SessionManager
 from requests_pb2_grpc import add_RadioControllerServicer_to_server
 
-from db.db import DB
-from db.models import Base
 from radio_controller.config import Config
 from radio_controller.service import RadioControllerService
 
@@ -20,18 +21,15 @@ def run():
     logger.info("Starting grpc server")
     config = get_config()
     logger.info(f"grpc port is: {config.GRPC_PORT}")
-    db = DB(
-        uri=config.SQLALCHEMY_DB_URI,
+    db_engine = create_engine(
+        url=config.SQLALCHEMY_DB_URI,
         encoding=config.SQLALCHEMY_DB_ENCODING,
         echo=config.SQLALCHEMY_ECHO,
         future=config.SQLALCHEMY_FUTURE
     )
-    Base.metadata.create_all(db.engine)  # TODO replace with migrations
-    db.initialize()
+    session_manager = SessionManager(db_engine)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    add_RadioControllerServicer_to_server(
-        RadioControllerService(db=db), server
-    )
+    add_RadioControllerServicer_to_server(RadioControllerService(session_manager=session_manager), server)
     server.add_insecure_port(f"[::]:{config.GRPC_PORT}")
     server.start()
     logger.info(f"GRPC Server started on port {config.GRPC_PORT}")
