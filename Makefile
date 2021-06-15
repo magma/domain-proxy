@@ -140,3 +140,15 @@ _ci_e2e_tests: _install_skaffold_ci _contour_install _generate_ci_certificates
 	-v $(CERTS):/opt/server/certs:Z \
 	-v $(CURDIR)/tools/deployment/vendor/sas.cfg:/opt/server/sas.cfg \
 	domainproxyfw1/harness:0.0.1 test_main.py
+
+.PHONY: migration
+migration:
+	@docker run -d -p 5432:5432 --name db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=dp postgres \
+	2> /dev/null || true
+	@sleep 5
+	export DB_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/dp; \
+	cd db_service/migrations; \
+	alembic -c ./alembic.ini upgrade head; \
+	alembic -c ./alembic.ini revision --autogenerate
+	docker rm -f db
+	
