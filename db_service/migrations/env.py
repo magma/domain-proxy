@@ -1,3 +1,5 @@
+import os
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -25,7 +27,10 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+db_url = os.environ.get('DB_URL')
 
+if db_url:
+    config.set_section_option("alembic", "sqlalchemy.url", db_url)
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
