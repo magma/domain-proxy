@@ -152,10 +152,35 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a fully qualified db_service name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+
+{{- define "domain-proxy.db_service.fullname" -}}
+{{- if .Values.db_service.fullnameOverride -}}
+{{- .Values.db_service.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- printf "%s-%s" .Release.Name .Values.db_service.name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.db_service.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the appropriate apiVersion for deployment.
 */}}
 {{- define "domain-proxy.deployment.apiVersion" -}}
 {{- print "apps/v1" -}}
+{{- end -}}
+
+{{/*
+Return the appropriate apiVersion for job.
+*/}}
+{{- define "domain-proxy.job.apiVersion" -}}
+{{- print "batch/v1" -}}
 {{- end -}}
 
 {{/*
@@ -172,6 +197,7 @@ Return the appropriate apiVersion for HTTPProxy.
 {{- print "projectcontour.io/v1" -}}
 {{- end -}}
 
+{{/*
 Return the appropriate apiVersion for rbac.
 */}}
 {{- define "rbac.apiVersion" -}}
@@ -212,5 +238,16 @@ Create the name of the service account to use for radio controller
 {{- default (include "domain-proxy.fullname" .) .Values.radio_controller.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.radio_controller.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use for db service
+*/}}
+{{- define "domain-proxy.db_service.serviceAccountName" -}}
+{{- if .Values.db_service.serviceAccount.create }}
+{{- default (include "domain-proxy.fullname" .) .Values.db_service.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.db_service.serviceAccount.name }}
 {{- end }}
 {{- end }}

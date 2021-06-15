@@ -21,6 +21,10 @@ build:
       context: .
       docker:
         dockerfile: radio_controller/Dockerfile
+    - image: db-service
+      context: .
+      docker:
+        dockerfile: db_service/Dockerfile
 deploy:
   helm:
     flags:
@@ -41,6 +45,8 @@ deploy:
             image: protocol-controller
           radio_controller:
             image: radio-controller
+          db_service:
+            image: db-service
         setValues:
           protocol_controller:
             tlsConfig:
