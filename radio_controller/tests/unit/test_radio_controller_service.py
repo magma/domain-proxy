@@ -4,6 +4,7 @@ import testing.postgresql
 from parameterized import parameterized
 
 from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
+from db_service.session_manager import SessionManager
 from db_service.tests.db_testcase import DBTestCase
 from radio_controller.service import RadioControllerService
 
@@ -17,7 +18,7 @@ class RadioControllerTestCase(DBTestCase):
 
     def setUp(self):
         super().setUp()
-        self.rc_service = RadioControllerService(self.db)
+        self.rc_service = RadioControllerService(SessionManager(self.engine))
 
     @parameterized.expand([
         ({CBSD_ID: 1, "some_key": "some_value"}, 1, DBRequest),
