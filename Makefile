@@ -90,8 +90,9 @@ wait -n 1 2
 kubectl logs -l type=integration-tests
 @set -e;\
 SUCCESS=$$(kubectl get jobs $(1)-tests-job -o jsonpath='{.status.succeeded}');\
-if [[ -z $$SUCCESS ]]; then SUCCESS=0; fi; \
-if [[ $$SUCCESS != '1' ]]; then exit 1; fi
+echo $$SUCCESS;\
+if [[ -z $$SUCCESS ]]; then SUCCESS=0; echo "test passed"; fi; \
+if [[ $$SUCCESS != '1' ]]; then echo "test failed"; exit 1; fi
 endef
 
 .PHONY: _ci_test_configuration-controller
