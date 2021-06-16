@@ -68,6 +68,12 @@ _generate_certificates:
 	charts/domain-proxy/certificates/protocol_controller/domain_proxy_server.key
 	ln -s -f ../../../../tools/deployment/certificates/certs/ca.cert \
 	charts/domain-proxy/certificates/protocol_controller/ca.cert
+	ln -s -f ../../../../tools/deployment/certificates/certs/device_c.cert \
+	charts/domain-proxy/certificates/configuration_controller/device_c.cert
+	ln -s -f ../../../../tools/deployment/certificates/certs/device_c.key \
+	charts/domain-proxy/certificates/configuration_controller/device_c.key
+	ln -s -f ../../../../tools/deployment/certificates/certs/ca.cert \
+	charts/domain-proxy/certificates/configuration_controller/ca.cert
 
 .PHONY: _generate_ci_certificates
 _generate_ci_certificates: _generate_certificates

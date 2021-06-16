@@ -10,8 +10,6 @@ The following table list the common configurable parameters of the domain-proxy 
 | ---              | ---             | ---       |
 | `nameOverride` | Replaces the name of the chart in the `Chart.yaml` file. | `""` |
 | `fullnameOverride` | Completely replaces the helm release generated name. | `""` |
-| `sas_certificate_directory` | Directory path where sas certificates are stored. | `""` |
-| `sas_key_directory` | Directory path where sas keys are stored. | `""` |
 
 In addition each microservice (`protocol-controller`, `radio-controller`, `configuration-controller`) section has it's own set of configurable parameters presented in table below.
 
@@ -34,10 +32,9 @@ In addition each microservice (`protocol-controller`, `radio-controller`, `confi
 | `service.enable` | Whether to enable kubernetes service for microservice | `true` |
 | `service.type` | Type of enabled kubernetes service | `ClusterIP` |
 | `service.port` | Default port of enabled kubernetes service | varies between microservices |
-| `tlsConfig.paths` | | `` | 
-| `tlsConfig.cert` | | `` | 
-| `tlsConfig.key` | | `` | 
-| `tlsConfig.ca` | | `` | 
+| `tlsConfig.paths.cert` | Client/Server TLS certificate path | `""` | 
+| `tlsConfig.paths.key` | Client/Server TLS private key path | `""` | 
+| `tlsConfig.paths.ca` | Certificate Authority certifcate chain path | `""` | 
 | `ingress.enabled` | Enable kubernetes ingress resource | `false` |
 | `ingress.annotations` | Annotations to kubernetes ingress resource | `{}` |
 | `ingress.hosts` | Host header wildcards for kubernetes ingress resource | `""` |
