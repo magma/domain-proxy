@@ -14,6 +14,13 @@ spec:
         image: protocol-controller-tests
         command: ["python"]
         args: ["-m", "pytest", "-vvv", "tests/integration", "--junitxml=/backend/protocol_controller/test-results/test_report.xml"]
+        env:
+        - name: CC_CERT_PATH
+          value: "/backend/configuration_controller/certs/device_c.cert"
+        - name: CC_SSL_KEY_PATH
+          value: "/backend/configuration_controller/certs/device_c.key"
+        - name: SAS_CERT_PATH
+          value: "/backend/configuration_controller/certs/ca.cert"
         volumeMounts:
         - name: test-results
           mountPath: /backend/protocol_controller/test-results

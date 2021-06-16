@@ -20,9 +20,9 @@ class Config:
     SQLALCHEMY_FUTURE = db_service.config.Config().SQLALCHEMY_FUTURE
 
     # Security
-    CC_CERT_PATH = os.environ.get('CC_CERT_PATH', '/backend/configuration_controller/certs/device_c.cert')
-    CC_SSL_KEY_PATH = os.environ.get('CC_SSL_KEY_PATH', '/backend/configuration_controller/certs/device_c.key')
-    SAS_CERT_PATH = os.environ.get('SAS_CERT_PATH', '/backend/configuration_controller/certs/ca.cert')
+    CC_CERT_PATH = os.environ.get('CC_CERT_PATH', '/backend/configuration_controller/certs/tls.crt')
+    CC_SSL_KEY_PATH = os.environ.get('CC_SSL_KEY_PATH', '/backend/configuration_controller/certs/tls.key')
+    SAS_CERT_PATH = os.environ.get('SAS_CERT_PATH', '/backend/configuration_controller/certs/ca.crt')
 
 
 class DevelopmentConfig(Config):
