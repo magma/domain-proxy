@@ -47,13 +47,6 @@ deploy:
             image: radio-controller
           db_service:
             image: db-service
-        setValues:
-          protocol_controller:
-            tlsConfig:
-              paths:
-                cert: "certificates/protocol_controller/domain_proxy_bundle.cert"
-                key:  "certificates/protocol_controller/domain_proxy_server.key"
-                ca:  "certificates/protocol_controller/ca.cert"
 profiles:
   - name: integration-tests
     patches:

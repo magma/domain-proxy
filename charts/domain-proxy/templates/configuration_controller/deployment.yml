@@ -43,13 +43,17 @@ spec:
           resources:
             {{- toYaml .Values.configuration_controller.resources | nindent 12 }}
           volumeMounts:
-            - name: certificates
+            - name: tls
               mountPath: /backend/configuration_controller/certs
               readOnly: true
       volumes:
-        - name: certificates
-          secret:
-            secretName: certificates
+        - name: tls
+          projected:
+            sources:
+            - secret:
+                name: {{ include "domain-proxy.fullname" . -}}-cc
+            - secret:
+                name: {{ include "domain-proxy.fullname" . -}}-cc-ca
 
       {{- with .Values.configuration_controller.nodeSelector }}
       nodeSelector:

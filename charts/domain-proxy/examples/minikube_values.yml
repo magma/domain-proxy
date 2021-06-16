@@ -1,9 +1,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-sas_certificate_directory: ""
-sas_key_directory: ""
-
 configuration_controller:
 
   nameOverride: ""
@@ -22,7 +19,6 @@ configuration_controller:
     
 
   replicaCount: 1
-
 
   imagePullSecrets: []
 
@@ -44,9 +40,9 @@ configuration_controller:
 
   tlsConfig:
     paths:
-      cert: ""
-      key: ""
-      ca: ""
+      cert: "certificates/configuration_controller/device_c.cert"
+      key: "certificates/configuration_controller/device_c.key"
+      ca: "certificates/configuration_controller/ca.cert"
 
   ingress:
     enabled: false
@@ -117,13 +113,15 @@ protocol_controller:
 
   tlsConfig:
     paths:
-      cert: ""
-      key: ""
-      ca: ""
+      cert: "certificates/protocol_controller/domain_proxy_bundle.cert"
+      key: "certificates/protocol_controller/domain_proxy_server.key"
+      ca: "certificates/protocol_controller/ca.cert"
 
   ingress:
     enabled: false
-    annotations: {}
+    annotations: 
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "domain-proxy-pc-ca"
     hosts: []
     tls: []
 
