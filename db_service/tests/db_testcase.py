@@ -3,9 +3,9 @@ import unittest
 import testing.postgresql
 from sqlalchemy import create_engine
 
+from db_service.config import TestConfig
 from db_service.models import Base
 from db_service.session_manager import Session
-from radio_controller.config import TestConfig
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
 

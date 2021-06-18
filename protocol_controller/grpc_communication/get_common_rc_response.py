@@ -3,10 +3,12 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from time import sleep
-from typing import Dict, Optional
+from typing import Dict, Optional, Type
 
 from flask import Request, current_app
 from grpc import RpcError
+from marshmallow import Schema
+from marshmallow.exceptions import MarshmallowError
 from werkzeug.exceptions import BadRequest
 
 from protocol_controller.grpc_client.grpc_client import GrpcClient
@@ -14,14 +16,16 @@ from protocol_controller.grpc_communication.upload_request import upload_request
 from requests_pb2 import RequestDbId
 
 
-def get_common_bulk_rc_response(request: Request, response_name: str):
+def get_common_bulk_rc_response(request: Request, response_name: str, validator: Type[Schema]):
     client = current_app.extensions["GrpcClient"]
     try:
+        validator().load(request.json)
         req_db_ids = upload_requests(client, json.dumps(request.json))
         responses_dict = collect_rc_responses(client, req_db_ids)
-    except RpcError as e:
+    except (RpcError, MarshmallowError) as e:
+        logging.error(str(e))
         raise BadRequest(str(e))
-    resp = {response_name: list(responses_dict.values())}  # TODO validate with marshmallow or sth
+    resp = {response_name: list(responses_dict.values())}
     return resp, 200
 
 

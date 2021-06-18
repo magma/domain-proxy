@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 from db_service.models import DBGrant, DBGrantState, DBResponse
 from db_service.session_manager import Session
@@ -101,7 +101,7 @@ def process_deregistration_responses(responses: List[DBResponse], session: Sessi
             return
 
 
-def _get_or_create_grant_from_response(response: DBResponse, session: Session) -> None:
+def _get_or_create_grant_from_response(response: DBResponse, session: Session) -> Optional[DBGrant]:
     cbsd_id = response.payload[CBSD_ID]
     grant_id = response.payload[GRANT_ID]
     logger.info(f'Getting grant by cbsd_id={cbsd_id} and grant_id={grant_id}')
