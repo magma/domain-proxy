@@ -23,18 +23,9 @@ class RequestRoutingTestCase(AppTestCase):
         ('grant', grant_requests[0], 1),
         ('heartbeat', heartbeat_requests[0], 1),
         ('spectrumInquiry', spectrum_inquiry_requests[0], 1),
-        ('registration', incorrect_request_payload, 0),
-        ('registration', incorrect_request_payload, 0),
-        ('deregistration', incorrect_request_payload, 0),
-        ('relinquishment', incorrect_request_payload, 0),
-        ('grant', incorrect_request_payload, 0),
-        ('heartbeat', incorrect_request_payload, 0),
-        ('spectrumInquiry', incorrect_request_payload, 0),
     ])
     def test_cbsd_gets_response_from_sas(self, route, request_payload, expected_resp_len):
-        # Given
-
-        # When
+        # Given / When
         resp = self.client.post(
             f'/sas/v1/{route}',
             follow_redirects=True,
@@ -43,6 +34,25 @@ class RequestRoutingTestCase(AppTestCase):
 
         # Then
         self.assertEqual(expected_resp_len, len(resp.json[f"{route}Response"]))
+
+    @parameterized.expand([
+        ('registration', incorrect_request_payload),
+        ('deregistration', incorrect_request_payload),
+        ('relinquishment', incorrect_request_payload),
+        ('grant', incorrect_request_payload),
+        ('heartbeat', incorrect_request_payload),
+        ('spectrumInquiry', incorrect_request_payload),
+    ])
+    def test_dp_raises_400_when_payload_doent_pass_validation(self, route, payload):
+        # Given / When
+        resp = self.client.post(
+            f'/sas/v1/{route}',
+            follow_redirects=True,
+            json=payload
+        )
+
+        # Then
+        self.assertEqual(400, resp.status_code)
 
     def test_cbsd_only_gets_response_from_sas_for_the_request_it_sent(self):
         # Given / When

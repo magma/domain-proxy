@@ -3,16 +3,13 @@ import json
 import testing.postgresql
 from parameterized import parameterized
 
-from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
+from db_service.db_initialize import DBInitializer
+from db_service.models import DBRequest, DBResponse
 from db_service.session_manager import SessionManager
 from db_service.tests.db_testcase import DBTestCase
-from mappings.types import RequestStates, RequestTypes
-from radio_controller.service import RadioControllerService
+from radio_controller.service.service import RadioControllerService
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
-
-
-CBSD_ID = "cbsdId"
 
 
 class RadioControllerTestCase(DBTestCase):
@@ -20,28 +17,7 @@ class RadioControllerTestCase(DBTestCase):
     def setUp(self):
         super().setUp()
         self.rc_service = RadioControllerService(SessionManager(self.engine))
-
-    @parameterized.expand([
-        ({CBSD_ID: 1, "some_key": "some_value"}, 1, DBRequest),
-        ({"definitelyNotcbsdId": 1, "some_key": "some_value"}, 0, type(None)),
-    ])
-    def test_create_db_request_inserts_requests_to_db_when_cbsdId_argument_present_in_payload(
-            self, payload, expected, result_type
-    ):
-        # Given
-        foo_type = DBRequestType(id=1, name="foo_type")
-        foo_state = DBRequestState(id=1, name="foo_state")
-        self.session.add_all([foo_type, foo_state])
-        self.session.commit()
-
-        # When
-        result = self.rc_service._create_db_request(foo_type, foo_state, payload)
-
-        requests = self.session.query(DBRequest).all()
-
-        # Then
-        self.assertEqual(expected, len(requests))
-        self.assertIsInstance(result, result_type)
+        DBInitializer(SessionManager(self.engine)).initialize()
 
     @parameterized.expand([
         (1, {"foo": "bar"}, {"foo": "bar"}),
@@ -61,29 +37,17 @@ class RadioControllerTestCase(DBTestCase):
         # Then
         self.assertEqual(grpc_expected_response_payload, grpc_response_payload)
 
-    @parameterized.expand([
-        ({RequestTypes.REGISTRATION.value: [{"cbsdId": "foo1"}, {"cbsdId": "foo2"}]}, [1, 2], [1, 2]),
-        ({RequestTypes.REGISTRATION.value: [{"cbsdId": "foo1"}, {"someId": "foo2"}]}, [1, ], [1, ]),
-        ({}, [], []),
-        (None, [], []),
-    ])
-    def test_store_requests_from_map_stores_requests_in_db(
-            self, request_map, expected_db_ids, expected_ids_returned_by_store_requests_from_map_method
-    ):
+    def test_store_requests_from_map_stores_requests_in_db(self):
         # Given
-        request_map = request_map
-        if request_map:
-            for type in request_map.keys():
-                self.session.add(DBRequestType(name=type))
-        request_pending_state = DBRequestState(name=RequestStates.PENDING.value)
-        self.session.add(request_pending_state)
-        self.session.commit()
+        request_map = {
+             "registrationRequest": [{"fccId": "foo1", "cbsdSerialNumber": "foo2"},
+                                     {"fccId": "foo1", "cbsdSerialNumber": "foo2"}]
+         }
 
         # When
-        response_ids = self.rc_service._store_requests_from_map(request_map)
+        self.rc_service._store_requests_from_map(request_map)
         db_request_ids = self.session.query(DBRequest.id).all()
         db_request_ids = [_id for (_id,) in db_request_ids]
 
         # Then
-        self.assertListEqual(db_request_ids, expected_db_ids)
-        self.assertListEqual(response_ids, expected_ids_returned_by_store_requests_from_map_method)
+        self.assertListEqual(db_request_ids, [1, 2])

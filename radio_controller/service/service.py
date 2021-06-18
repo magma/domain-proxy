@@ -5,11 +5,11 @@ from typing import Dict, List, Optional
 from db_service.models import DBRequest, DBRequestState, DBRequestType, DBResponse
 from db_service.session_manager import SessionManager
 from mappings.types import RequestStates
+from radio_controller.service.strategies.strategies_mapping import get_cbsd_id_strategies
 from requests_pb2 import RequestDbId, RequestDbIds, RequestPayload, ResponsePayload
 from requests_pb2_grpc import RadioControllerServicer
 
 logger = logging.getLogger(__name__)
-
 
 CBSD_SERIAL_NR = "cbsdSerialNumber"
 FCC_ID = "fccId"
@@ -38,20 +38,17 @@ class RadioControllerService(RadioControllerServicer):
 
     def _store_requests_from_map(self, request_map: Dict[str, List[Dict]]) -> List[int]:
         request_db_ids = []
-        try:
-            request_type = next(iter(request_map))
-        except (StopIteration, TypeError) as e:
-            logger.error(f"Incorrect request map format: {request_map}. Details: {e}")
-            return []
+        request_type = next(iter(request_map))
         with self.session_manager.session_scope() as session:
             request_pending_state = session.query(DBRequestState).filter(
                 DBRequestState.name == RequestStates.PENDING.value).scalar()
             req_type = session.query(DBRequestType).filter(DBRequestType.name == request_type).scalar()
             for request_json in request_map[request_type]:
-                db_request = self._create_db_request(
-                    request_type=req_type,
-                    request_state=request_pending_state,
-                    request_payload=request_json
+                db_request = DBRequest(
+                    type=req_type,
+                    state=request_pending_state,
+                    cbsd_id=self.get_cbsd_id(request_type, request_json),
+                    payload=request_json
                 )
                 if db_request:
                     logger.info(f"Adding request {db_request}.")
@@ -61,27 +58,6 @@ class RadioControllerService(RadioControllerServicer):
             session.commit()
         return request_db_ids
 
-    @staticmethod
-    def _create_db_request(request_type: DBRequestType,
-                           request_state: DBRequestState,
-                           request_payload: Dict) -> Optional[DBRequest]:
-        cbsd_id = None
-
-        if FCC_ID in request_payload and CBSD_SERIAL_NR in request_payload:
-            cbsd_id = f'{request_payload[FCC_ID]}/{request_payload[CBSD_SERIAL_NR]}'
-
-        elif CBSD_ID in request_payload:
-            cbsd_id = request_payload[CBSD_ID]
-
-        if not cbsd_id:
-            logger.error(f"Could not generate cbsd_id from request: {request_payload}.")
-            return None
-        return DBRequest(
-            type=request_type,
-            state=request_state,
-            cbsd_id=cbsd_id,
-            payload=request_payload)
-
     def _get_request_response(self, request_db_id: int) -> ResponsePayload:
         with self.session_manager.session_scope() as session:
             logger.info(f"Trying to fetch DB response for request id: {request_db_id}")
@@ -89,3 +65,7 @@ class RadioControllerService(RadioControllerServicer):
         if not response:
             return ResponsePayload(payload='{}')
         return ResponsePayload(payload=json.dumps(response.payload))
+
+    @staticmethod
+    def get_cbsd_id(request_name: str, request_payload: Dict):
+        return get_cbsd_id_strategies[request_name](request_payload)
