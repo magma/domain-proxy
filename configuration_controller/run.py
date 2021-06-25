@@ -53,7 +53,10 @@ def run():
     for request_type in RequestTypes:
         req_type = request_type.value
         response_type = request_response[req_type]
-        consumer = RequestDBConsumer(request_type=req_type)
+        consumer = RequestDBConsumer(
+            request_type=req_type,
+            request_max_batch_size=config.MAX_REQUEST_BATCH_SIZE,
+        )
         processor = ResponseDBProcessor(
             response_type=response_type,
             request_map_key_func=processor_strategies[req_type]["request_map_key"],

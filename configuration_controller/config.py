@@ -8,6 +8,7 @@ class Config:
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
     REQUEST_PROCESSING_INTERVAL = int(os.environ.get('REQUEST_PROCESSING_INTERVAL', 10))
     REQUEST_MAPPING_FILE_PATH = os.environ.get('REQUEST_MAPPING_FILE_PATH', 'mappings/request_mapping.yml')
+    MAX_REQUEST_BATCH_SIZE = int(os.environ.get('MAX_REQUEST_BATCH_SIZE', 100))
 
     # Services
     SAS_URL = os.environ.get('SAS_URL', 'https://fake-sas-service/v1.2')
