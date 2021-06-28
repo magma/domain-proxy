@@ -6,14 +6,14 @@ from db_service.session_manager import Session
 from db_service.tests.db_testcase import DBTestCase
 
 
-DEFAULT_MAX_REQUEST_BATCH_SIZE = 10
+REQUEST_PROCESSING_LIMIT = 10
 
 
 class RegistrationDBConsumerTestCase(DBTestCase):
 
     def test_get_pending_requests_retrieves_empty_list_of_requests_when_no_pending_requests_in_db(self):
         # Given
-        consumer = RequestDBConsumer("someRequest", request_max_batch_size=DEFAULT_MAX_REQUEST_BATCH_SIZE)
+        consumer = RequestDBConsumer("someRequest", request_processing_limit=REQUEST_PROCESSING_LIMIT)
 
         # When
         reqs = consumer.get_pending_requests(self.session)
@@ -23,7 +23,7 @@ class RegistrationDBConsumerTestCase(DBTestCase):
 
     def test_get_pending_requests_retrieves_pending_requests_only(self):
         # Given
-        consumer = RequestDBConsumer("someRequest", request_max_batch_size=DEFAULT_MAX_REQUEST_BATCH_SIZE)
+        consumer = RequestDBConsumer("someRequest", request_processing_limit=REQUEST_PROCESSING_LIMIT)
 
         self._prepare_two_pending_and_one_processed_request()
 
@@ -36,6 +36,9 @@ class RegistrationDBConsumerTestCase(DBTestCase):
     @parameterized.expand([
         (1, 1, 1),
         (2, 2, 0),
+        (0, 2, 0),
+        (-1, 2, 0),
+        (-100, 2, 0),
     ])
     def test_different_processes_dont_pick_up_each_others_requests(self, max_batch_size, req_count_1, req_count_2):
         """
@@ -45,11 +48,11 @@ class RegistrationDBConsumerTestCase(DBTestCase):
         """
         # Given
         config = self.get_config()
-        config.MAX_REQUEST_BATCH_SIZE = max_batch_size
+        config.REQUEST_PROCESSING_LIMIT = max_batch_size
         session1 = Session(bind=self.engine)
         session2 = Session(bind=self.engine)
 
-        consumer = RequestDBConsumer("someRequest", request_max_batch_size=config.MAX_REQUEST_BATCH_SIZE)
+        consumer = RequestDBConsumer("someRequest", request_processing_limit=config.REQUEST_PROCESSING_LIMIT)
         self._prepare_two_pending_and_one_processed_request()
 
         # When
