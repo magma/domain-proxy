@@ -7,17 +7,13 @@ configuration_controller:
   fullnameOverride: ""
   enabled: true
   name: configuration-controller
+
   sasEndpointUrl: "https://fake-sas-service/v1.2"
 
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: configuration-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
-    
+  image: domainproxyfw1/configuration-controller:latest
 
   replicaCount: 1
 
@@ -64,11 +60,10 @@ configuration_controller:
   livenessProbe: {}
 
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
@@ -86,11 +81,7 @@ protocol_controller:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: protocol-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
+  image: domainproxyfw1/protocol-controller:latest
     
   replicaCount: 1
 
@@ -149,11 +140,10 @@ protocol_controller:
   livenessProbe: {}
 
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
@@ -171,12 +161,7 @@ radio_controller:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: radio-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
-    
+  image: domainproxyfw1/radio-controller:latest
 
   replicaCount: 1
 
@@ -222,11 +207,10 @@ radio_controller:
   livenessProbe: {}
 
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
@@ -244,7 +228,7 @@ db_service:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: db-service
+  image: domainproxyfw1/db-service:latest
 
   imagePullSecrets: []
 

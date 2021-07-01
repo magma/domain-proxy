@@ -46,6 +46,9 @@ spec:
             - name: tls
               mountPath: /backend/configuration_controller/certs
               readOnly: true
+          envFrom:
+          - configMapRef:
+              name: {{ include "domain-proxy.configuration_controller.fullname" . }}
       volumes:
         - name: tls
           projected:

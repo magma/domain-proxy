@@ -7,6 +7,7 @@ fullnameOverride: ""
 
 configuration_controller:
 
+  sasEndpointUrl: "https://fake-sas-service/v1.3"
   nameOverride: ""
   fullnameOverride: ""
   enabled: true
@@ -167,6 +168,8 @@ protocol_controller:
       key: ""
       ca: ""
 
+  apiPrefix: "/sas/v1"
+
   ingress:
     enabled: false
     annotations: {}
@@ -187,8 +190,10 @@ protocol_controller:
     annotations: {}
     virtualhost:
       fqdn: chart-example.local
+      path: /example
       tls: {}
         #secretName: chart-example-tls
+        #caSecret: chart-example-ca
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
