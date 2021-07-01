@@ -44,6 +44,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.protocol_controller.resources | nindent 12 }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "domain-proxy.protocol_controller.fullname" . }}
       {{- with .Values.protocol_controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -177,6 +177,13 @@ Return the appropriate apiVersion for deployment.
 {{- end -}}
 
 {{/*
+Return the appropriate apiVersion for ingress.
+*/}}
+{{- define "domain-proxy.ingress.apiVersion" -}}
+{{- print "networking.k8s.io/v1beta1" -}}
+{{- end -}}
+
+{{/*
 Return the appropriate apiVersion for job.
 */}}
 {{- define "domain-proxy.job.apiVersion" -}}
@@ -187,7 +194,7 @@ Return the appropriate apiVersion for job.
 Return the appropriate apiVersion for ingress.
 */}}
 {{- define "ingress.apiVersion" -}}
-{{- print "networking.k8s.io/v1beta1" -}}
+{{- print "networking.k8s.io/v1" -}}
 {{- end -}}
 
 {{/*
@@ -251,3 +258,10 @@ Create the name of the service account to use for db service
 {{- default "default" .Values.db_service.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define the domain-proxy.namespace template
+*/}}
+{{- define "domain-proxy.namespace" -}}
+{{ printf "namespace: %s" .Release.Namespace }}
+{{- end -}}

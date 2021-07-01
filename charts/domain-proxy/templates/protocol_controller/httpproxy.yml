@@ -17,10 +17,10 @@ spec:
     tls:
       secretName: {{ .Values.protocol_controller.httpproxy.virtualhost.tls.secretName }}
       clientValidation:
-        caSecret: domain-proxy-pc-ca
+        caSecret: {{ .Values.protocol_controller.httpproxy.virtualhost.tls.caSecret }}
   routes:
     - conditions:
-        - prefix: /sas
+        - prefix: {{ .Values.protocol_controller.httpproxy.virtualhost.path }}
       services:
         - name: {{ $fullName }}
           port: {{ $svcPort }}
