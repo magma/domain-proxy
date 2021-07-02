@@ -50,6 +50,8 @@ _ci_init: _generate_certificates _generate_harness_config
 	kubectl create secret generic certificates --from-file=tools/deployment/certificates/certs
 	kubectl apply -f ./tools/deployment/vendor
 	kubectl wait --for=condition=Available --timeout=600s Deployment/fake-sas-deployment
+	kubectl describe statefulset/postgres-database
+	kubectl describe pod postgres-database-0
 	kubectl rollout status --watch --timeout=600s statefulset/postgres-database
 
 .PHONY: _contour_install
