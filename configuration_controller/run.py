@@ -55,7 +55,7 @@ def run():
         response_type = request_response[req_type]
         consumer = RequestDBConsumer(
             request_type=req_type,
-            request_max_batch_size=config.MAX_REQUEST_BATCH_SIZE,
+            request_processing_limit=config.REQUEST_PROCESSING_LIMIT,
         )
         processor = ResponseDBProcessor(
             response_type=response_type,
