@@ -52,6 +52,7 @@ _ci_init: _generate_certificates _generate_harness_config
 	kubectl wait --for=condition=Available --timeout=600s Deployment/fake-sas-deployment
 	sleep 60
 	kubectl logs postgres-database-0
+	minikube addons list
 	kubectl describe statefulset/postgres-database
 	kubectl describe pod postgres-database-0
 	kubectl rollout status --watch --timeout=600s statefulset/postgres-database
