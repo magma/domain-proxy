@@ -9,6 +9,8 @@ class Config:
     RC_RESPONSE_WAIT_TIMEOUT = int(os.environ.get('RC_RESPONSE_WAIT_TIMEOUT', 60))
     RC_RESPONSE_WAIT_INTERVAL = int(os.environ.get('RC_RESPONSE_WAIT_INTERVAL', 1))
 
+    PROTOCOL_PLUGIN = os.environ.get('PROTOCOL_PLUGIN', 'protocol_controller.plugins.cbsd_sas.CBSDSASProtocolPlugin')
+
     # gRPC
     GRPC_SERVICE = os.environ.get('GRPC_SERVICE', 'domain-proxy-radio-controller')
     GRPC_PORT = int(os.environ.get('GRPC_PORT', 50053))

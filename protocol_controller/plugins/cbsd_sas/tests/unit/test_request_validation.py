@@ -1,19 +1,24 @@
-from marshmallow.exceptions import MarshmallowError
-from parameterized import parameterized
 from unittest import TestCase
 
-from protocol_controller.tests.fixtures.fake_requests.deregistration_requests import deregistration_requests
-from protocol_controller.tests.fixtures.fake_requests.grant_requests import grant_requests
-from protocol_controller.tests.fixtures.fake_requests.heartbeat_requests import heartbeat_requests
-from protocol_controller.tests.fixtures.fake_requests.registration_requests import registration_requests
-from protocol_controller.tests.fixtures.fake_requests.relinquishment_requests import relinquishment_requests
-from protocol_controller.tests.fixtures.fake_requests.spectrum_inquiry_requests import spectrum_inquiry_requests
-from protocol_controller.validators.deregistration_request import DeregistrationRequestSchema
-from protocol_controller.validators.grant_request import GrantRequestSchema
-from protocol_controller.validators.heartbeat_request import HeartbeatRequestSchema
-from protocol_controller.validators.registration_request import RegistrationRequestSchema
-from protocol_controller.validators.relinquishment_request import RelinquishmentRequestSchema
-from protocol_controller.validators.spectrum_inquiry_request import SpectrumInquiryRequestSchema
+from marshmallow.exceptions import MarshmallowError
+from parameterized import parameterized
+
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.deregistration_requests import \
+    deregistration_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.grant_requests import grant_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.heartbeat_requests import heartbeat_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.registration_requests import \
+    registration_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.relinquishment_requests import \
+    relinquishment_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.spectrum_inquiry_requests import \
+    spectrum_inquiry_requests
+from protocol_controller.plugins.cbsd_sas.validators.deregistration_request import DeregistrationRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.grant_request import GrantRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.heartbeat_request import HeartbeatRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.registration_request import RegistrationRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.relinquishment_request import RelinquishmentRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.spectrum_inquiry_request import SpectrumInquiryRequestSchema
 
 
 class RequestValidationTestCase(TestCase):

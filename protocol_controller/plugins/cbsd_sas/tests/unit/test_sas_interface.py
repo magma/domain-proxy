@@ -1,6 +1,6 @@
 from parameterized import parameterized
 
-from protocol_controller.tests.app_testcase import AppTestCase
+from protocol_controller.plugins.cbsd_sas.tests.app_testcase import AppTestCase
 
 REGISTRATION = 'registration'
 DEREGISTRATION = 'deregistration'

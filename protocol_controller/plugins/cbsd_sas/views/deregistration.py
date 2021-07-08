@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask_json import as_json
 
 from protocol_controller.grpc_communication.get_common_rc_response import get_common_bulk_rc_response
-from protocol_controller.validators.deregistration_request import DeregistrationRequestSchema
+from protocol_controller.plugins.cbsd_sas.validators.deregistration_request import DeregistrationRequestSchema
 
 deregistration_page = Blueprint("deregistration", __name__)
 
