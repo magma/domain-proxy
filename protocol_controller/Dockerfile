@@ -8,7 +8,7 @@ RUN pip3 install --upgrade pip --no-cache-dir -r requirements.txt
 RUN python -m grpc_tools.protoc -I ../protobufs/requests --python_out=. --grpc_python_out=. ../protobufs/requests/requests.proto
 
 FROM standard-version as tests-version
-RUN pip3 install --upgrade pip --no-cache-dir -r tests/requirements.txt
+RUN pip3 install --upgrade pip --no-cache-dir -r plugins/cbsd_sas/tests/requirements.txt
 RUN python -m grpc_tools.protoc -I ../protobufs/requests --python_out=. --grpc_python_out=. ../protobufs/requests/requests.proto
 
 FROM ${ENV}-version as final
@@ -16,4 +16,4 @@ ENV PYTHONPATH=$PYTHONPATH:/
 
 EXPOSE 8000
 
-CMD ["sh", "entrypoint.sh"]
+CMD ["python", "service.py"]

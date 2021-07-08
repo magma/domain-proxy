@@ -2,13 +2,17 @@ from concurrent.futures import ThreadPoolExecutor
 
 from parameterized import parameterized
 
-from protocol_controller.tests.app_testcase import AppTestCase
-from protocol_controller.tests.fixtures.fake_requests.deregistration_requests import deregistration_requests
-from protocol_controller.tests.fixtures.fake_requests.grant_requests import grant_requests
-from protocol_controller.tests.fixtures.fake_requests.heartbeat_requests import heartbeat_requests
-from protocol_controller.tests.fixtures.fake_requests.registration_requests import registration_requests
-from protocol_controller.tests.fixtures.fake_requests.relinquishment_requests import relinquishment_requests
-from protocol_controller.tests.fixtures.fake_requests.spectrum_inquiry_requests import spectrum_inquiry_requests
+from protocol_controller.plugins.cbsd_sas.tests.app_testcase import AppTestCase
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.deregistration_requests import \
+    deregistration_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.grant_requests import grant_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.heartbeat_requests import heartbeat_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.registration_requests import \
+    registration_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.relinquishment_requests import \
+    relinquishment_requests
+from protocol_controller.plugins.cbsd_sas.tests.fixtures.fake_requests.spectrum_inquiry_requests import \
+    spectrum_inquiry_requests
 
 incorrect_request_payload = {"incorrect": ["payload"]}
 
