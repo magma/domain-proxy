@@ -32,8 +32,11 @@ spec:
         - name: {{ .Values.radio_controller.name }}
           securityContext:
             {{- toYaml .Values.radio_controller.securityContext | nindent 12 }}
-          image: "{{ .Values.radio_controller.image }}"
-          imagePullPolicy: {{ .Values.radio_controller.imageConfig.pullPolicy }}
+          image: >-
+            {{ .Values.radio_controller.image.repository -}}:
+            {{- .Values.radio_controller.image.tag | 
+            default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.radio_controller.image.pullPolicy }}
           {{- if .Values.radio_controller.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.radio_controller.livenessProbe | nindent 12 }}

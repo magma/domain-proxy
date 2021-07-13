@@ -47,6 +47,8 @@ deploy:
             image: radio-controller
           db_service:
             image: db-service
+        imageStrategy:
+          helm: {}
 profiles:
   - name: integration-tests
     patches:
