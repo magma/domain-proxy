@@ -66,9 +66,10 @@ _nginx_install:
 	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 	helm repo update
 	helm upgrade --install \
-	--set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-internal"=true \
+	--set controller.extraEnvs[0].name="GODEBUG",controller.extraEnvs[0].value="x509ignoreCN=0" \
 	nginx-ingress ingress-nginx/ingress-nginx --version 3.34.0
 	kubectl wait --for=condition=Available --timeout=600s Deployment/nginx-ingress-ingress-nginx-controller
+	#--set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-internal"=true
 
 .PHONY: _generate_certificates
 _generate_certificates:

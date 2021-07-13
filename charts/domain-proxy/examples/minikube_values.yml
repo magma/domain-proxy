@@ -9,15 +9,10 @@ configuration_controller:
   name: configuration-controller
   sasEndpointUrl: "https://fake-sas-service/v1.2"
 
-  imageConfig:
+  image:
+    repository: configuration-controller
     pullPolicy: IfNotPresent
-
-  image: configuration-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
-    
+    tag: ""
 
   replicaCount: 1
 
@@ -83,15 +78,11 @@ protocol_controller:
   enabled: true
   name: protocol-controller
 
-  imageConfig:
+  image:
+    repository: protocol-controller
+    tag: ""
     pullPolicy: IfNotPresent
 
-  image: protocol-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
-    
   replicaCount: 1
 
   imagePullSecrets: []
@@ -168,15 +159,10 @@ radio_controller:
   enabled: true
   name: radio-controller
 
-  imageConfig:
+  image:
+    repository: radio-controller
+    tag: ""
     pullPolicy: IfNotPresent
-
-  image: radio-controller
-  #image:
-    #repository: configuration-controller
-    # Overrides the image tag whose default is the chart appVersion.
-#    tag: ""
-    
 
   replicaCount: 1
 
@@ -241,10 +227,10 @@ db_service:
   fullnameOverride: ""
   name: db-service
 
-  imageConfig:
+  image:
+    repository: db-service
     pullPolicy: IfNotPresent
-
-  image: db-service
+    tag: ""
 
   imagePullSecrets: []
 

@@ -10,10 +10,10 @@ configuration_controller:
 
   sasEndpointUrl: "https://fake-sas-service/v1.2"
 
-  imageConfig:
+  image:
+    repository: domainproxyfw1/configuration-controller
     pullPolicy: IfNotPresent
-
-  image: domainproxyfw1/configuration-controller:latest
+    tag: "latest"
 
   replicaCount: 1
 
@@ -78,10 +78,10 @@ protocol_controller:
   enabled: true
   name: protocol-controller
 
-  imageConfig:
+  image:
+    repository: domainproxyfw1/protocol-controller
+    tag: "latest"
     pullPolicy: IfNotPresent
-
-  image: domainproxyfw1/protocol-controller:latest
     
   replicaCount: 1
 
@@ -158,10 +158,10 @@ radio_controller:
   enabled: true
   name: radio-controller
 
-  imageConfig:
+  image:
+    repository: domainproxyfw1/radio-controller
+    tag: "latest"
     pullPolicy: IfNotPresent
-
-  image: domainproxyfw1/radio-controller:latest
 
   replicaCount: 1
 
@@ -225,10 +225,10 @@ db_service:
   fullnameOverride: ""
   name: db-service
 
-  imageConfig:
+  image:
+    repository: domainproxyfw1/db-service
     pullPolicy: IfNotPresent
-
-  image: domainproxyfw1/db-service:latest
+    tag: "latest"
 
   imagePullSecrets: []
 

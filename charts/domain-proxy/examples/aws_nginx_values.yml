@@ -9,10 +9,10 @@ configuration_controller:
   name: configuration-controller
   sasEndpointUrl: "https://fake-sas-service/v1.3"
 
-  imageConfig:
+  image:
+    repository: domainproxyfw1/configuration-controller
     pullPolicy: IfNotPresent
-
-  image: domainproxyfw1/configuration-controller:latest
+    tag: "latest"
 
   replicaCount: 1
 
@@ -80,7 +80,10 @@ protocol_controller:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: domainproxyfw1/protocol-controller:latest
+  image:
+    repository: domainproxyfw1/protocol-controller
+    tag: "latest"
+    pullPolicy: IfNotPresent
     
   replicaCount: 1
 
@@ -114,7 +117,7 @@ protocol_controller:
     enabled: true
     annotations: 
       nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-      nginx.ingress.kubernetes.io/auth-tls-secret: "domain-proxy-pc-ca"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "default/domain-proxy-pc-ca"
       nginx.ingress.kubernetes.io/default-backend: "domain-proxy-protocol-controller"
       kubernetes.io/ingress.class: "nginx"
 
@@ -167,7 +170,10 @@ radio_controller:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: domainproxyfw1/radio-controller:latest
+  image:
+    repository: domainproxyfw1/radio-controller
+    tag: "latest"
+    pullPolicy: IfNotPresent
 
   replicaCount: 1
 
@@ -234,7 +240,10 @@ db_service:
   imageConfig:
     pullPolicy: IfNotPresent
 
-  image: domainproxyfw1/db-service:latest
+  image:
+    repository: domainproxyfw1/db-service
+    pullPolicy: IfNotPresent
+    tag: "latest"
 
   imagePullSecrets: []
 

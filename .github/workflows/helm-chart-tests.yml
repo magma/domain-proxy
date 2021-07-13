@@ -4,9 +4,9 @@ on:
   pull_request:
     branches:
       - 'master'
-    paths:
-      - "charts/**"
-      - ".github/workflows/helm-chart-tests.yml"
+    #paths:
+    #  - "charts/**"
+    #  - ".github/workflows/helm-chart-tests.yml"
 
 jobs:
   helm_chart_tests:

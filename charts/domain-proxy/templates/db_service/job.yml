@@ -14,11 +14,17 @@ spec:
       serviceAccountName: {{ include "domain-proxy.db_service.serviceAccountName" . }}
       containers:
       - name: {{ .Values.db_service.name }}
-        image: {{ .Values.db_service.image }}
+        image: >-
+          {{ .Values.db_service.image.repository -}}:
+          {{- .Values.db_service.image.tag |
+          default .Chart.AppVersion }}
       restartPolicy: Never
       initContainers:
       - name: {{ .Values.db_service.name }}-init
-        image: {{ .Values.db_service.image }}
+        image: >-
+          {{ .Values.db_service.image.repository -}}:
+          {{- .Values.db_service.image.tag |
+          default .Chart.AppVersion }}
         command: ["alembic"]
         args: ["upgrade","head"]
   backoffLimit: 4
