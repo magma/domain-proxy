@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "github.com/domain-proxy/active_mode_controller/api/requests";
+
 message RequestPayload {
   string payload = 1;
 }

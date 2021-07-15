@@ -9,6 +9,10 @@ build:
     push: false
     concurrency: 0
   artifacts:
+    - image: active-mode-controller
+      context: .
+      docker:
+        dockerfile: active_mode_controller/Dockerfile
     - image: protocol-controller
       context: .
       docker:
@@ -39,6 +43,8 @@ deploy:
         version: "0.1.0"
         #wait: true
         artifactOverrides:
+          active_mode_controller:
+            image: active-mode-controller
           configuration_controller:
             image: configuration-controller
           protocol_controller:
