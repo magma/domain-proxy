@@ -124,6 +124,9 @@ _ci_test_protocol-controller: _install_skaffold_ci _contour_install
 _ci_test_radio-controller: _install_skaffold_ci _contour_install
 	$(call _ci_integration_tests,radio-controller)
 
+.PHONY: _ci_test_active-mode-controller
+_ci_test_active-mode-controller: _install_skaffold_ci _contour_install
+	$(call _ci_integration_tests,active-mode-controller)
 
 .PHONY: _setup_db
 _setup_db: _postgres_db_setup

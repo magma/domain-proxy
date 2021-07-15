@@ -4,6 +4,10 @@ coverage:
     project:
       default:
         target: 0% #overall project/ repo coverage
+      active_mode_controller:
+        target: 75%
+        flags:
+          - active-mode-controller
       configuration_controller:
         target: 0%
        flags:
