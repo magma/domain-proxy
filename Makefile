@@ -180,3 +180,8 @@ migration:
 	alembic -c ./alembic.ini revision --autogenerate
 	docker rm -f db
 
+.PHONY: connect
+connect:
+	docker build -t ssh tools/ssh_tunnel
+	docker run -d -e REMOTE_PORT=$(REMOTE_PORT) -e JUMPHOST=$(JUMPHOST) -it \
+	--rm --net=host -v $(KEY):/root/.ssh/id_rsa --name ssh ssh
