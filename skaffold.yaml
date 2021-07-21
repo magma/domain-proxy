@@ -82,3 +82,9 @@ profiles:
            - "./tools/deployment/tests/protocol_controller_*.yml"
     activation:
       - env: CI=true
+
+  - name: nginx-ingress
+    patches:
+      - op: replace
+        path: /deploy/helm/releases/0/valuesFiles/0
+        value: ./charts/domain-proxy/examples/minikube_values_nginx.yml

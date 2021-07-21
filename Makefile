@@ -145,19 +145,29 @@ _ci_chart_smoke_tests: _install_skaffold_ci _contour_install
 	skaffold run
 	helm test --timeout 10m domain-proxy
 
-.PHONY: _ci_e2e_tests
-_ci_e2e_tests: _install_skaffold_ci _contour_install _generate_ci_certificates
+.PHONY: _ci_ingress_tests_contour
+_ci_ingress_tests_contour: _install_skaffold_ci _contour_install _generate_ci_certificates
 	sudo --preserve-env=MINIKUBE_HOME,KUBECONFIG minikube tunnel > /dev/null &
 	skaffold run
-	@set -e;\
-	docker run \
-	--add-host=domain-proxy:$$(kubectl get svc contour-envoy \
-	--output jsonpath='{.status.loadBalancer.ingress[0].ip}') \
-	--network minikube \
-	--rm \
-	-v $(CERTS):/opt/server/certs:Z \
-	-v $(CURDIR)/tools/deployment/vendor/sas.cfg:/opt/server/sas.cfg \
-	domainproxyfw1/harness:0.0.1 test_main.py
+	sleep 10
+	cd tools/deployment/certificates/certs; \
+	curl --key device_b.key --cert device_b.cert \
+	--cacert ca.cert \
+	--resolve "domain-proxy:443:$$(kubectl get svc \
+	contour-envoy --output jsonpath='{.status.loadBalancer.ingress[0].ip}')" \
+	https://domain-proxy/sas/v1/registration 
+
+.PHONY: _ci_ingress_tests_nginx
+_ci_ingress_tests_nginx: _install_skaffold_ci _nginx_install _generate_ci_certificates
+	sudo --preserve-env=MINIKUBE_HOME,KUBECONFIG minikube tunnel > /dev/null &
+	skaffold run --profile nginx-ingress
+	sleep 10
+	cd tools/deployment/certificates/certs; \
+	curl --key device_b.key --cert device_b.cert \
+	--cacert ca.cert \
+	--resolve "domain-proxy:443:$$(kubectl get svc \
+	nginx-ingress-ingress-nginx-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}')" \
+	https://domain-proxy/sas/v1/registration 
 
 .PHONY: migration
 migration:

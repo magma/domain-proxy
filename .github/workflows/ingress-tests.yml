@@ -1,4 +1,4 @@
-name: E2E tests
+name: Ingress tests
 
 on: 
   pull_request:
@@ -6,9 +6,15 @@ on:
       - 'master'
 
 jobs:
-  End_to_end_tests:
-    name: "Domain proxy end to end tests."
+  ingress_tests:
+    name: "${{ matrix.ingress }} tests"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ingress:
+          - contour
+          - nginx
     steps:
     - uses: actions/checkout@v2
     - name: Install Minikube
@@ -24,23 +30,9 @@ jobs:
       run: |
         make _ci_init
 
-    - name: Get minikube IP and prepare directory for test results
-      run: |
-        minikube ip
-        #mkdir -p /tmp/test-results
-        #minikube mount /tmp/test-results:/tmp/test-results &
-
-    - name: Run e2e tests
+    - name: Run ingress tests
       timeout-minutes: 5
       env:
         KUBECONFIG: "/home/runner/.kube/config"
       run: | 
-        #make _ci_e2e_tests
-        echo "run tests"
-
-    #- name: Upload integration test results
-    #  if: always()
-    #  uses: actions/upload-artifact@v2
-    #  with:
-    #    name: test-results
-    #    path: /tmp/test-results/
+        CI=false make _ci_ingress_tests_${{ matrix.ingress }}
