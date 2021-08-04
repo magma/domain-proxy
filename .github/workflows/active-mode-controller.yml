@@ -9,7 +9,7 @@ on:
       - ".github/workflows/active-mode-controller.yml"
   push:
     branches:
-      - "master"
+      - "!master"
     paths:
       - "active_mode_controller/**"
       - ".github/workflows/active-mode-controller.yml"
@@ -30,21 +30,22 @@ jobs:
 
     steps:
       - name: Checkout code
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up Go ${{ matrix.go-version }}
-      - uses: actions/setup-go@v2
+        uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Run Go linter
-      - uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v2
         with:
           version: v1.29
+          working-directory: active_mode_controller
 
       - name: Run Go tests
-      - run: |
-          go test ./... -v -race -coverprofile=coverage.txt -covermode=actomic
+        run: |
+          go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
