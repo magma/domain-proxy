@@ -9,7 +9,7 @@ on:
       - ".github/workflows/active-mode-controller.yml"
   push:
     branches:
-      - "master"
+      - "!master"
     paths:
       - "active_mode_controller/**"
       - ".github/workflows/active-mode-controller.yml"
