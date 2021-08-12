@@ -8,7 +8,7 @@ yaml-files:
   - '.yamllint'
 
 ignore: |
-  **/templates/*.yaml
+  **/templates/**/*.yaml
 
 rules:
   braces: enable

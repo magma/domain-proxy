@@ -205,17 +205,6 @@ Return the appropriate apiVersion for HTTPProxy.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for rbac.
-*/}}
-{{- define "rbac.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "rbac.authorization.k8s.io/v1" }}
-{{- print "rbac.authorization.k8s.io/v1" -}}
-{{- else -}}
-{{- print "rbac.authorization.k8s.io/v1beta1" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Create the name of the service account to use for configuration controller
 */}}
 {{- define "domain-proxy.configuration_controller.serviceAccountName" -}}

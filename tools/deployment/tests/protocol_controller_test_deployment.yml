@@ -21,6 +21,8 @@ spec:
           value: "/backend/configuration_controller/certs/device_c.key"
         - name: SAS_CERT_PATH
           value: "/backend/configuration_controller/certs/ca.cert"
+        - name: GRPC_SERVICE
+          value: "domain-proxy-radio-controller"
         volumeMounts:
         - name: test-results
           mountPath: /backend/protocol_controller/test-results

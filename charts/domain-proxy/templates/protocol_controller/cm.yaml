@@ -10,4 +10,5 @@ data:
 {{- if .Values.protocol_controller.apiPrefix }}
   API_PREFIX: {{ .Values.protocol_controller.apiPrefix }}
 {{- end }}
+  GRPC_SERVICE: {{ include "domain-proxy.radio_controller.fullname" . }}
 {{- end }}

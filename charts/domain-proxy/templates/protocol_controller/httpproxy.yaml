@@ -1,6 +1,8 @@
 {{- if .Values.protocol_controller.httpproxy.enabled -}}
 {{- $fullName := include "domain-proxy.protocol_controller.fullname" . -}}
 {{- $svcPort := .Values.protocol_controller.service.port -}}
+{{- $caSecret := printf "%s/%s-pc-ca" .Release.Namespace (include "domain-proxy.fullname" .) -}}
+{{- $tlsSecret := printf "%s-pc" (include "domain-proxy.fullname" .) -}}
 apiVersion: {{ template "httpproxy.apiVersion" . }}
 kind: HTTPProxy
 metadata:
@@ -15,9 +17,13 @@ spec:
   virtualhost:
     fqdn: {{ .Values.protocol_controller.httpproxy.virtualhost.fqdn | quote }}
     tls:
-      secretName: {{ .Values.protocol_controller.httpproxy.virtualhost.tls.secretName }}
+      secretName: {{ default $tlsSecret .Values.protocol_controller.httpproxy.virtualhost.tls.secretName }}
       clientValidation:
+      {{- if .Values.protocol_controller.tlsConfig.paths.ca }}
+        caSecret: {{ $caSecret }}
+      {{ else }}
         caSecret: {{ .Values.protocol_controller.httpproxy.virtualhost.tls.caSecret }}
+      {{- end }}
   routes:
     - conditions:
         - prefix: {{ .Values.protocol_controller.httpproxy.virtualhost.path }}

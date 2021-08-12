@@ -12,7 +12,7 @@ spec:
       imagePullPolicy: "Always"
       args:
         - "-zv"
-        - "domain-proxy-radio-controller"
+        - {{ include "domain-proxy.radio_controller.fullname" . }}
         - "50053"
   restartPolicy: Never
 {{- end }}
